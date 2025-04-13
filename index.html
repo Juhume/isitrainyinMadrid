@@ -6,9 +6,22 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Capa de partículas -->
+  <canvas id="particles"></canvas>
+  <canvas id="rain" style="display: none;"></canvas>
+
+  <!-- Nubes suaves (opcional) -->
+  <div class="cloud" style="top: 10%; animation-delay: 0s;"></div>
+  <div class="cloud" style="top: 25%; animation-delay: 15s;"></div>
+  <div class="cloud" style="top: 40%; animation-delay: 30s;"></div>
+
+  <!-- App principal -->
   <div id="app">
     <h1 id="respuesta">Cargando...</h1>
   </div>
+
   <script src="main.js"></script>
+  <script src="particles.js"></script>
+  <script src="rain.js"></script>
 </body>
 </html>

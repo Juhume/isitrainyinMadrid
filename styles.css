@@ -1,14 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    transition: background-color 0.5s ease;
+  font-family: 'Rubik', sans-serif;
+  background: linear-gradient(135deg, #141e30, #243b55);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 1.5s ease-in-out;
+  padding: 20px;
+}
+
+/* MODOS día / noche automáticos */
+body.modo-dia {
+  background: linear-gradient(135deg, #fcd34d, #fbbf24);
+}
+
+body.modo-noche {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+}
+
+/* Canvas de partículas y lluvia */
+canvas#particles,
+canvas#rain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Contenedor principal */
+#app {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2.5rem;
+  border-radius: 2rem;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
+  animation: fadeInApp 1.2s ease forwards;
+  text-align: center;
+  z-index: 10;
+}
+
+#respuesta {
+  font-size: 2.8rem;
+  color: #fff;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+span {
+  display: block;
+  font-size: 1.6rem;
+  margin-top: 1rem;
+  opacity: 0;
+  animation: fadeInTemp 1.2s ease 1s forwards;
+}
+
+/* Nubes flotantes decorativas */
+.cloud {
+  position: absolute;
+  width: 200px;
+  height: 60px;
+  background: #fff;
+  border-radius: 50%;
+  filter: blur(25px);
+  opacity: 0.05;
+  animation: cloudFloat 60s linear infinite;
+  z-index: 2;
+}
+
+.cloud::after,
+.cloud::before {
+  content: "";
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  filter: blur(25px);
+}
+
+.cloud::before {
+  width: 100px;
+  height: 100px;
+  left: -50px;
+  top: -20px;
+}
+
+.cloud::after {
+  width: 120px;
+  height: 120px;
+  right: -60px;
+  top: -40px;
+}
+
+/* Animaciones */
+@keyframes fadeInApp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
   }
-  
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInTemp {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cloudFloat {
+  from { left: -300px; }
+  to { left: 120%; }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
   #respuesta {
-    font-size: 2.5rem;
-    color: white;
+    font-size: 2rem;
   }
+
+  span {
+    font-size: 1.2rem;
+  }
+
+  #app {
+    padding: 1.5rem;
+  }
+
+  .cloud {
+    width: 140px;
+    height: 40px;
+  }
+}
