@@ -16,7 +16,7 @@ async function vaALlover() {
       mensaje = "Sí, está lloviendo en Madrid 🌧️";
       document.body.style.backgroundColor = "#5f99ff";
     } else {
-      mensaje = "No, hoy no llueve en Madrid ☀️";
+      mensaje = "No, ahora no llueve en Madrid ☀️";
       document.body.style.backgroundColor = "#fcd34d";
     }
 
