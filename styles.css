@@ -12,6 +12,7 @@ body {
   height: 100vh;
   overflow: hidden;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   transition: background 1.5s ease-in-out;
@@ -20,14 +21,16 @@ body {
 
 /* MODOS día / noche automáticos */
 body.modo-dia {
-  background: linear-gradient(135deg, #fcd34d, #fbbf24);
+  background: linear-gradient(-45deg, #fcd34d, #fbbf24, #fde68a, #f59e0b);
+  background-size: 400% 400%;
+  animation: sunnyFlow 20s ease infinite;
 }
 
 body.modo-noche {
   background: linear-gradient(135deg, #0f172a, #1e293b);
 }
 
-/* Canvas de partículas y lluvia */
+/* Canvas */
 canvas#particles,
 canvas#rain {
   position: fixed;
@@ -39,33 +42,7 @@ canvas#rain {
   pointer-events: none;
 }
 
-/* Contenedor principal */
-#app {
-  background: rgba(255, 255, 255, 0.08);
-  padding: 2.5rem;
-  border-radius: 2rem;
-  backdrop-filter: blur(15px);
-  box-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
-  animation: fadeInApp 1.2s ease forwards;
-  text-align: center;
-  z-index: 10;
-}
-
-#respuesta {
-  font-size: 2.8rem;
-  color: #fff;
-  text-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
-}
-
-span {
-  display: block;
-  font-size: 1.6rem;
-  margin-top: 1rem;
-  opacity: 0;
-  animation: fadeInTemp 1.2s ease 1s forwards;
-}
-
-/* Nubes flotantes decorativas */
+/* Nubes */
 .cloud {
   position: absolute;
   width: 200px;
@@ -101,6 +78,88 @@ span {
   top: -40px;
 }
 
+/* Logo */
+#logo {
+  position: absolute;
+  top: 10px;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  z-index: 10;
+}
+
+/* App */
+#app {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    padding: 2rem;
+    width: 90%;
+    max-width: 340px;
+    z-index: 10;
+    text-align: center;
+    animation: fadeInApp 1.2s ease forwards;
+    transition: all 0.5s ease;
+  }
+  
+  #respuesta {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    line-height: 1.3;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+  }
+  
+  #respuesta span {
+    font-size: 1.2rem;
+    font-weight: 300;
+    opacity: 0.9;
+    display: block;
+    color: #e0e0e0;
+    margin-top: 0.5rem;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    transition: opacity 0.5s ease;
+  }
+  
+  #respuesta .emoji {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: fadeInApp 0.6s ease-out;
+  }
+  
+  #respuesta .temp {
+    font-size: 2.5rem;
+    font-weight: 500;
+    color: #ffffff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    margin-bottom: 0.5rem;
+  }
+  
+  #respuesta .texto {
+    font-size: 1.2rem;
+    color: #e0e0e0;
+    font-weight: 300;
+    line-height: 1.4;
+    padding: 0 10px;
+  }
+
+/* Footer info */
+#info-clima {
+  position: absolute;
+  bottom: 10px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  width: 100%;
+  z-index: 10;
+}
+
 /* Animaciones */
 @keyframes fadeInApp {
   from {
@@ -113,25 +172,25 @@ span {
   }
 }
 
-@keyframes fadeInTemp {
-  to {
-    opacity: 1;
-  }
-}
-
 @keyframes cloudFloat {
   from { left: -300px; }
   to { left: 120%; }
 }
 
-/* Responsive */
+@keyframes sunnyFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Responsive fuerte */
 @media (max-width: 600px) {
   #respuesta {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
 
-  span {
-    font-size: 1.2rem;
+  #respuesta span {
+    font-size: 1.1rem;
   }
 
   #app {
@@ -139,7 +198,7 @@ span {
   }
 
   .cloud {
-    width: 140px;
+    width: 120px;
     height: 40px;
   }
 }
