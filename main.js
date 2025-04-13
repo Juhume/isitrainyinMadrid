@@ -14,7 +14,7 @@ function aplicarTemaAutomatico() {
   }
   
   async function vaALlover() {
-    const API_URL = "https://wttr.in/Almeria?format=j1";
+    const API_URL = "https://wttr.in/Madrid?format=j1";
     const respuesta = document.getElementById("respuesta");
     const rainCanvas = document.getElementById("rain");
     const particlesCanvas = document.getElementById("particles");
