@@ -216,34 +216,39 @@ barrioBtns.forEach(btn => {
 
 // Agitar para mostrar/ocultar menú barrio con animación
 function detectarShake(event) {
-  const aceleracion = event.accelerationIncludingGravity;
-  const intensidad = Math.abs(aceleracion.x) + Math.abs(aceleracion.y) + Math.abs(aceleracion.z);
-  const now = Date.now();
-
-  if (intensidad > 25 && now - lastShake > 1000) {
-    lastShake = now;
-    const menu = document.getElementById("barrio-menu");
-    if (!menu) return;
-
-    menu.classList.remove("mostrar-popup", "ocultar-popup");
-    void menu.offsetWidth;
-
-    if (!menuVisible) {
-      menu.classList.add("mostrar-popup");
-      menu.style.display = "block";
-      menuVisible = true;
-      if (!haVibradoYa && navigator.vibrate) {
-        navigator.vibrate(100);
-        haVibradoYa = true;
+    const aceleracion = event.accelerationIncludingGravity;
+    const intensidad = Math.abs(aceleracion.x) + Math.abs(aceleracion.y) + Math.abs(aceleracion.z);
+    const now = Date.now();
+  
+    if (intensidad > 25 && now - lastShake > 1000) {
+      lastShake = now;
+      const menu = document.getElementById("barrio-menu");
+      if (!menu) return;
+  
+      // Limpieza previa
+      menu.classList.remove("mostrar-popup", "ocultar-popup");
+      void menu.offsetWidth;
+  
+      if (!menuVisible) {
+        menu.classList.add("mostrar-popup");
+        menu.style.display = "block";
+        menuVisible = true;
+  
+        if (!haVibradoYa && navigator.vibrate) {
+          navigator.vibrate(100);
+          haVibradoYa = true;
+        }
+      } else {
+        menu.classList.add("ocultar-popup");
+        setTimeout(() => {
+          menu.style.display = "none";
+        }, 400);
+        menuVisible = false;
+        haVibradoYa = false;
       }
-    } else {
-      menu.classList.add("ocultar-popup");
-      setTimeout(() => { menu.style.display = "none"; }, 400);
-      menuVisible = false;
-      haVibradoYa = false;
     }
   }
-}
+  
 
 if (window.DeviceMotionEvent) {
   window.addEventListener("click", () => {
