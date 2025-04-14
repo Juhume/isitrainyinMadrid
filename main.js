@@ -1,5 +1,8 @@
 let mockClima = "";
 let barrio = "";
+let lastShake = 0;
+let menuVisible = false;
+let haVibradoYa = false;
 
 function aplicarTemaAutomatico() {
   const ahora = new Date();
@@ -37,7 +40,7 @@ async function vaALlover() {
 
   let API_URL = "https://wttr.in/Madrid?format=j1";
   if (barrio === "cuchillo") API_URL = "https://wttr.in/40.3811929,-3.73797568773365?format=j1";
-  if (barrio === "elfo") API_URL = "https://wttr.in/40.434501831261166,-3.651017187763704?format=j1";  
+  if (barrio === "elfo") API_URL = "https://wttr.in/40.434501831261166,-3.651017187763704?format=j1";
 
   const respuesta = document.getElementById("respuesta");
   const rainCanvas = document.getElementById("rain");
@@ -114,7 +117,6 @@ async function vaALlover() {
 
     const humedad = document.getElementById("humedad");
     const sensacion = document.getElementById("sensacion");
-
     if (humedad) humedad.textContent = `Humedad: ${humidity}%`;
     if (sensacion) sensacion.textContent = feelsLike !== temp ? `Sensación: ${feelsLike}°C` : "";
 
@@ -125,9 +127,7 @@ async function vaALlover() {
     });
 
     const infoClima = document.getElementById("info-clima");
-    if (infoClima) {
-      infoClima.textContent = `Actualizado: ${ahora}`;
-    }
+    if (infoClima) infoClima.textContent = `Actualizado: ${ahora}`;
 
     const ahoraMadrid = new Date().toLocaleString("en-US", { timeZone: "Europe/Madrid" });
     const horaActual = new Date(ahoraMadrid).getHours();
@@ -148,29 +148,23 @@ async function vaALlover() {
     const todas = [...hoyFuturas, ...mananaProcesadas].slice(0, 5);
 
     if (contenedor) {
-      if (todas.length === 0) {
-        contenedor.innerHTML = `<div>No hay datos próximos 🌙</div>`;
-      } else {
-        contenedor.innerHTML = todas.map(h => {
-          const lluvia = parseInt(h.chanceofrain, 10);
-          const icono = lluvia >= 70 ? "🌧️" : lluvia >= 30 ? "🌦️" : "☀️";
-          const horaMostrar = h.horaReal >= 24 ? `${h.horaReal - 24}h mañana` : `${h.horaReal}h`;
-          return `<div>${horaMostrar}<br>${icono}<br>${lluvia}%</div>`;
-        }).join("");
-      }
+      contenedor.innerHTML = todas.length === 0
+        ? `<div>No hay datos próximos 🌙</div>`
+        : todas.map(h => {
+            const lluvia = parseInt(h.chanceofrain, 10);
+            const icono = lluvia >= 70 ? "🌧️" : lluvia >= 30 ? "🌦️" : "☀️";
+            const horaMostrar = h.horaReal >= 24 ? `${h.horaReal - 24}h mañana` : `${h.horaReal}h`;
+            return `<div>${horaMostrar}<br>${icono}<br>${lluvia}%</div>`;
+          }).join("");
     }
 
     const todasLluviaAlta = todas.length && todas.every(h => parseInt(h.chanceofrain, 10) >= 70);
-    if (todasLluviaAlta) {
-      document.body.classList.add("modo-paraguas");
-    } else {
-      document.body.classList.remove("modo-paraguas");
-    }
+    document.body.classList.toggle("modo-paraguas", todasLluviaAlta);
 
   } catch (err) {
     console.error(err);
-    if (document.getElementById("respuesta")) {
-      document.getElementById("respuesta").innerHTML = `
+    if (respuesta) {
+      respuesta.innerHTML = `
         <div class="emoji">⚠️</div>
         <div class="temp">--</div>
         <div class="texto">Error al obtener datos</div>
@@ -179,13 +173,14 @@ async function vaALlover() {
   }
 }
 
+// === EVENTOS ===
 document.addEventListener("DOMContentLoaded", () => {
   aplicarTemaAutomatico();
   vaALlover();
   setInterval(vaALlover, 120000);
 });
 
-// Modo simulación (M)
+// Tecla M: menú de simulación
 document.addEventListener("keydown", (e) => {
   if (e.key.toLowerCase() === "m") {
     const menu = document.getElementById("mock-menu");
@@ -201,7 +196,7 @@ if (select) {
   });
 }
 
-// Modo barrio (B)
+// Tecla B: menú de barrios
 document.addEventListener("keydown", (e) => {
   if (e.key.toLowerCase() === "b") {
     const menu = document.getElementById("barrio-menu");
@@ -209,6 +204,7 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+// Botones del menú de barrios
 const barrioBtns = document.querySelectorAll("#barrio-options button");
 barrioBtns.forEach(btn => {
   btn.addEventListener("click", () => {
@@ -218,39 +214,31 @@ barrioBtns.forEach(btn => {
   });
 });
 
-let lastShake = 0;
-let menuVisible = false;
-let haVibradoYa = false;
-
+// Agitar para mostrar/ocultar menú barrio con animación
 function detectarShake(event) {
   const aceleracion = event.accelerationIncludingGravity;
   const intensidad = Math.abs(aceleracion.x) + Math.abs(aceleracion.y) + Math.abs(aceleracion.z);
-
   const now = Date.now();
+
   if (intensidad > 25 && now - lastShake > 1000) {
     lastShake = now;
-
     const menu = document.getElementById("barrio-menu");
     if (!menu) return;
 
-    // LIMPIAR clases previas
     menu.classList.remove("mostrar-popup", "ocultar-popup");
-    void menu.offsetWidth; // Reinicia animaciones
+    void menu.offsetWidth;
 
     if (!menuVisible) {
       menu.classList.add("mostrar-popup");
       menu.style.display = "block";
       menuVisible = true;
-
       if (!haVibradoYa && navigator.vibrate) {
         navigator.vibrate(100);
         haVibradoYa = true;
       }
     } else {
       menu.classList.add("ocultar-popup");
-      setTimeout(() => {
-        menu.style.display = "none";
-      }, 400);
+      setTimeout(() => { menu.style.display = "none"; }, 400);
       menuVisible = false;
       haVibradoYa = false;
     }
@@ -262,3 +250,11 @@ if (window.DeviceMotionEvent) {
     window.addEventListener("devicemotion", detectarShake);
   }, { once: true });
 }
+
+document.addEventListener("keydown", (e) => {
+    if (e.key.toLowerCase() === "s") {
+      detectarShake({
+        accelerationIncludingGravity: { x: 25, y: 25, z: 25 }
+      });
+    }
+  });
