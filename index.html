@@ -1,33 +1,55 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>¿Llueve en Madrid?</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>¿Va a llover en Madrid?</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Partículas (modo soleado) -->
   <canvas id="particles"></canvas>
-  <!-- Lluvia (modo lluvia) -->
   <canvas id="rain" style="display: none;"></canvas>
 
-  <!-- Nubes decorativas -->
   <div class="cloud" style="top: 10%; animation-delay: 0s;"></div>
   <div class="cloud" style="top: 25%; animation-delay: 15s;"></div>
   <div class="cloud" style="top: 40%; animation-delay: 30s;"></div>
 
-  <!-- Logo / título -->
-  <h2 id="logo">¿Llueve en Madrid?</h2>
+  <h2 id="logo"></h2>
 
-  <!-- Contenido principal -->
   <div id="app">
-    <div id="respuesta">
+    <div id="respuesta"></div>
+    <div id="detalles">
+      <div id="humedad"></div>
+      <div id="sensacion"></div>
     </div>
   </div>
 
-  <!-- Info inferior -->
+  <div id="prevision">
+    <h3>¿Y luego podría llover?</h3>
+    <div id="horas-lluvia">Cargando...</div>
+  </div>
+
   <div id="info-clima">Actualizado: --:--</div>
+
+  <div id="mock-menu" style="display: none;">
+    <label>Modo clima simulado:</label>
+    <select id="mock-select">
+      <option value="">(desactivado)</option>
+      <option value="Sunny">☀️ Soleado</option>
+      <option value="Light rain">🌧️ Lluvia ligera</option>
+      <option value="Thunderstorm">⛈️ Tormenta</option>
+      <option value="Fog">🌫️ Niebla</option>
+      <option value="Snow">❄️ Nieve</option>
+    </select>
+  </div>
+
+  <div id="barrio-menu" style="display: none;">
+    <label>¿Desde qué barrio miras al cielo?</label>
+    <div id="barrio-options">
+      <button data-barrio="cuchillo">🔪</button>
+      <button data-barrio="elfo">🧝</button>
+    </div>
+  </div>
 
   <script src="main.js"></script>
   <script src="particles.js"></script>
