@@ -84,17 +84,16 @@ function setupInicial() {
   obtenerClima();
 }
 
-function handleShake(event) {
-  const intensidad = Math.abs(event.acceleration.x) + Math.abs(event.acceleration.y);
-  const ahora = Date.now();
-  if (intensidad > 25 && ahora - lastShake > 1000) {
-    lastShake = ahora;
-    if (!haVibradoYa) {
-      toggleMenuBarrio();
+function handleShake(e) {
+    const acc = e.accelerationIncludingGravity;
+    const fuerza = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
+  
+    if (fuerza > 35 && !haVibradoYa) {
       haVibradoYa = true;
+      toggleMenuBarrio(); // ✅ aparece o desaparece según estado
+      setTimeout(() => haVibradoYa = false, 1000);
     }
   }
-}
 
 function toggleMenuBarrio() {
   const menu = document.getElementById("barrio-menu");
@@ -112,7 +111,7 @@ function toggleMenuBarrio() {
 
 function actualizarTitulo() {
   const logo = document.getElementById("logo");
-  if (barrio === "cuchillo") logo.textContent = "¿Va a llover en el barrio de navajero?";
+  if (barrio === "cuchillo") logo.textContent = "¿Va a llover en el barrio navajero?";
   else if (barrio === "elfo") logo.textContent = "¿Va a llover en el barrio elfo?";
   else logo.textContent = "¿Va a llover en Madrid?";
 }
