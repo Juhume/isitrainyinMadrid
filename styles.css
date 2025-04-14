@@ -328,3 +328,38 @@ canvas#rain {
     transform: scale(1.2);
   }
   
+  /* Popup mágico: aparición */
+@keyframes popupMagic {
+    0% {
+      opacity: 0;
+      transform: scale(0.6) rotate(-5deg);
+      filter: brightness(1.4);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) rotate(0);
+      filter: brightness(1);
+    }
+  }
+  
+  /* Popup mágico: salida */
+  @keyframes fadeOutMagic {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.6) rotate(3deg);
+    }
+  }
+  
+  #barrio-menu.mostrar-popup {
+    display: block !important;
+    animation: popupMagic 0.5s ease forwards;
+  }
+  
+  #barrio-menu.ocultar-popup {
+    animation: fadeOutMagic 0.4s ease forwards;
+  }
+  

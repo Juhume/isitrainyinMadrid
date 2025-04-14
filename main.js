@@ -219,20 +219,41 @@ barrioBtns.forEach(btn => {
 });
 
 let lastShake = 0;
+let menuVisible = false;
+let haVibradoYa = false;
 
 function detectarShake(event) {
   const aceleracion = event.accelerationIncludingGravity;
   const intensidad = Math.abs(aceleracion.x) + Math.abs(aceleracion.y) + Math.abs(aceleracion.z);
 
   const now = Date.now();
-
   if (intensidad > 25 && now - lastShake > 1000) {
     lastShake = now;
+
     const menu = document.getElementById("barrio-menu");
-    if (menu) {
-      menu.style.display = menu.style.display === "none" ? "block" : "none";
+    if (!menu) return;
+
+    if (!menuVisible) {
+      menu.classList.remove("ocultar-popup");
+      menu.classList.add("mostrar-popup");
+      menuVisible = true;
+
+      // Solo vibra la primera vez
+      if (!haVibradoYa && navigator.vibrate) {
+        navigator.vibrate(100);
+        haVibradoYa = true;
+      }
+
+    } else {
+      menu.classList.remove("mostrar-popup");
+      menu.classList.add("ocultar-popup");
+
+      setTimeout(() => {
+        menu.style.display = "none";
+      }, 400);
+      menuVisible = false;
+      haVibradoYa = false; // resetea para que pueda volver a vibrar la próxima vez
     }
-    if (navigator.vibrate) navigator.vibrate(80);
   }
 }
 
@@ -241,4 +262,3 @@ if (window.DeviceMotionEvent) {
     window.addEventListener("devicemotion", detectarShake);
   }, { once: true });
 }
-
