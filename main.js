@@ -233,26 +233,26 @@ function detectarShake(event) {
     const menu = document.getElementById("barrio-menu");
     if (!menu) return;
 
+    // LIMPIAR clases previas
+    menu.classList.remove("mostrar-popup", "ocultar-popup");
+    void menu.offsetWidth; // Reinicia animaciones
+
     if (!menuVisible) {
-      menu.classList.remove("ocultar-popup");
       menu.classList.add("mostrar-popup");
+      menu.style.display = "block";
       menuVisible = true;
 
-      // Solo vibra la primera vez
       if (!haVibradoYa && navigator.vibrate) {
         navigator.vibrate(100);
         haVibradoYa = true;
       }
-
     } else {
-      menu.classList.remove("mostrar-popup");
       menu.classList.add("ocultar-popup");
-
       setTimeout(() => {
         menu.style.display = "none";
       }, 400);
       menuVisible = false;
-      haVibradoYa = false; // resetea para que pueda volver a vibrar la próxima vez
+      haVibradoYa = false;
     }
   }
 }
