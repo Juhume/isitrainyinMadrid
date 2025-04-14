@@ -1,3 +1,6 @@
+/* ----------------------------------- */
+/* FONTS Y RESET */
+/* ----------------------------------- */
 @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap');
 
 * {
@@ -6,6 +9,9 @@
   padding: 0;
 }
 
+/* ----------------------------------- */
+/* BODY Y FONDOS DINÁMICOS */
+/* ----------------------------------- */
 body {
   font-family: 'Rubik', sans-serif;
   background: linear-gradient(135deg, #141e30, #243b55);
@@ -19,6 +25,7 @@ body {
   padding: 20px;
 }
 
+body.fondo-sun,
 body.modo-dia {
   background: linear-gradient(-45deg, #fcd34d, #fbbf24, #fde68a, #f59e0b);
   background-size: 400% 400%;
@@ -27,6 +34,27 @@ body.modo-dia {
 
 body.modo-noche {
   background: linear-gradient(135deg, #0f172a, #1e293b);
+}
+
+body.fondo-rain,
+body.modo-paraguas {
+  background: linear-gradient(135deg, #60a5fa, #2563eb) !important;
+}
+
+body.fondo-storm {
+  background: linear-gradient(135deg, #1e3a8a, #1e40af);
+}
+
+body.fondo-snow {
+  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+}
+
+body.fondo-fog {
+  background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+}
+
+body.fondo-clouds {
+  background: linear-gradient(135deg, #94a3b8, #64748b);
 }
 
 canvas#particles,
@@ -40,6 +68,9 @@ canvas#rain {
   pointer-events: none;
 }
 
+/* ----------------------------------- */
+/* NUBES DECORATIVAS */
+/* ----------------------------------- */
 .cloud {
   position: absolute;
   width: 200px;
@@ -72,6 +103,9 @@ canvas#rain {
   top: -40px;
 }
 
+/* ----------------------------------- */
+/* COMPONENTES PRINCIPALES */
+/* ----------------------------------- */
 #logo {
   position: absolute;
   top: 10px;
@@ -134,34 +168,6 @@ canvas#rain {
   z-index: 10;
 }
 
-@keyframes fadeInApp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes cloudFloat {
-  from { left: -300px; }
-  to { left: 120%; }
-}
-
-@keyframes sunnyFlow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@media (max-width: 600px) {
-  #respuesta { font-size: 1.8rem; }
-  #app { padding: 1.5rem; }
-  .cloud { width: 120px; height: 40px; }
-}
-
 #prevision {
   margin-top: 1.5rem;
   text-align: center;
@@ -174,6 +180,15 @@ canvas#rain {
   margin-bottom: 0.5rem;
   color: #fff;
 }
+#prevision h3::after {
+  content: ' ¡Coge el paraguas! ☂️';
+  color: #93c5fd;
+  font-size: 0.95rem;
+  display: block;
+  margin-top: 0.3rem;
+  animation: fadeIn 1s ease forwards;
+}
+
 #horas-lluvia {
   display: flex;
   justify-content: center;
@@ -192,16 +207,12 @@ canvas#rain {
   color: #fff;
 }
 
-body.modo-paraguas {
-  background: linear-gradient(135deg, #3b82f6, #1e3a8a) !important;
-}
-#prevision h3::after {
-  content: ' ¡Coge el paraguas! ☂️';
-  color: #93c5fd;
-  font-size: 0.95rem;
-  display: block;
-  margin-top: 0.3rem;
-  animation: fadeIn 1s ease forwards;
+/* ----------------------------------- */
+/* ANIMACIONES */
+/* ----------------------------------- */
+@keyframes fadeInApp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes fadeIn {
@@ -209,81 +220,95 @@ body.modo-paraguas {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ANIMACIÓN WOW DEL MENÚ */
+@keyframes cloudFloat {
+  from { left: -300px; }
+  to { left: 120%; }
+}
+
+@keyframes sunnyFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ----------------------------------- */
+/* MENÚS (BARRIO Y MOCK) */
+/* ----------------------------------- */
+
+#barrio-menu,
+#mock-menu {
+  display: none;
+}
 @keyframes popupMagic {
-    0% {
-      opacity: 0;
-      transform: scale(0.9);
-      filter: brightness(1.3);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1);
-      filter: brightness(1);
-    }
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+    filter: brightness(1.3);
   }
-  @keyframes fadeOutMagic {
-    0% {
-      opacity: 1;
-      transform: scale(1);
-    }
-    100% {
-      opacity: 0;
-      transform: scale(0.9);
-    }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1);
   }
-  
-  #barrio-menu {
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    background: rgba(30, 41, 59, 0.85);
-    color: white;
-    padding: 10px 15px;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    z-index: 1000;
-    backdrop-filter: blur(10px);
-    max-width: 80%;
-    transform-origin: bottom right;
-    pointer-events: auto;
-  }
-  
-  #barrio-menu.mostrar-popup {
-    display: block !important;
-    animation: popupMagic 0.4s ease forwards;
-  }
-  
-  #barrio-menu.ocultar-popup {
-    animation: fadeOutMagic 0.4s ease forwards;
-    pointer-events: none;
-  }
-  
-  #mock-menu {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: rgba(30, 41, 59, 0.85);
-    color: white;
-    padding: 10px 15px;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    z-index: 1000;
-    backdrop-filter: blur(10px);
-  }
-  
-  #barrio-options button {
-    background: none;
-    border: 2px solid white;
-    color: white;
-    font-size: 1.5rem;
-    border-radius: 10px;
-    margin: 5px;
-    cursor: pointer;
-    padding: 6px 10px;
-    transition: transform 0.2s ease;
-  }
-  #barrio-options button:hover {
-    transform: scale(1.2);
-  }
-  
+}
+
+@keyframes fadeOutMagic {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.9); }
+}
+
+#barrio-menu, #mock-menu {
+  position: fixed;
+  right: 20px;
+  background: rgba(30, 41, 59, 0.85);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+#barrio-menu {
+  bottom: 80px;
+  max-width: 80%;
+  transform-origin: bottom right;
+  pointer-events: auto;
+}
+#mock-menu {
+  bottom: 20px;
+}
+
+#barrio-menu.mostrar-popup {
+  display: block !important;
+  animation: popupMagic 0.4s ease forwards;
+}
+
+#barrio-menu.ocultar-popup {
+  animation: fadeOutMagic 0.4s ease forwards;
+  pointer-events: none;
+}
+
+#barrio-options button {
+  background: none;
+  border: 2px solid white;
+  color: white;
+  font-size: 1.5rem;
+  border-radius: 10px;
+  margin: 5px;
+  cursor: pointer;
+  padding: 6px 10px;
+  transition: transform 0.2s ease;
+}
+#barrio-options button:hover {
+  transform: scale(1.2);
+}
+
+/* ----------------------------------- */
+/* RESPONSIVE */
+/* ----------------------------------- */
+@media (max-width: 600px) {
+  #respuesta { font-size: 1.8rem; }
+  #app { padding: 1.5rem; }
+  .cloud { width: 120px; height: 40px; }
+}

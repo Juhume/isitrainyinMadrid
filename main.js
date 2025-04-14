@@ -1,265 +1,242 @@
+
 let mockClima = "";
 let barrio = "";
+let haVibradoYa = false;
 let lastShake = 0;
 let menuVisible = false;
-let haVibradoYa = false;
+let scriptClimaActivo = null;
+let lightningIntervalId;
 
-function aplicarTemaAutomatico() {
-  const ahora = new Date();
-  const horaMadrid = ahora.toLocaleString("en-US", { timeZone: "Europe/Madrid" });
-  const hora = new Date(horaMadrid).getHours();
-  const body = document.body;
+const datosSimulados = {
+  "Sunny": {
+    desc: "Sunny",
+    temp: "27",
+    feelsLike: "26",
+    humidity: "30",
+    chanceofrain: ["5", "5", "5", "0", "10"]
+  },
+  "Light rain": {
+    desc: "Light rain",
+    temp: "18",
+    feelsLike: "17",
+    humidity: "80",
+    chanceofrain: ["65", "70", "75", "80", "85"]
+  },
+  "Thunderstorm": {
+    desc: "Thunderstorm",
+    temp: "16",
+    feelsLike: "14",
+    humidity: "95",
+    chanceofrain: ["90", "95", "95", "90", "80"]
+  },
+  "Fog": {
+    desc: "Fog",
+    temp: "14",
+    feelsLike: "13",
+    humidity: "90",
+    chanceofrain: ["15", "10", "5", "0", "0"]
+  },
+  "Snow": {
+    desc: "Snow",
+    temp: "0",
+    feelsLike: "-2",
+    humidity: "88",
+    chanceofrain: ["70", "60", "50", "40", "30"]
+  }
+};
 
-  if (hora >= 20 || hora < 7) {
-    body.classList.add("modo-noche");
-    body.classList.remove("modo-dia");
-  } else {
-    body.classList.add("modo-dia");
-    body.classList.remove("modo-noche");
+window.addEventListener("DOMContentLoaded", () => {
+  setupInicial();
+});
+
+function setupInicial() {
+  document.getElementById("mock-select").addEventListener("change", e => {
+    mockClima = e.target.value;
+    obtenerClima();
+  });
+
+  document.querySelectorAll("#barrio-options button").forEach(boton => {
+    boton.addEventListener("click", () => {
+      barrio = boton.dataset.barrio;
+      actualizarTitulo();
+      transicionBarrio();
+      obtenerClima();
+    });
+  });
+
+  document.addEventListener("keydown", e => {
+    const key = e.key.toLowerCase();
+  
+    if (key === "m") {
+      toggleMenuBarrio();
+    }
+  
+    if (key === "c") {
+      const mockMenu = document.getElementById("mock-menu");
+      const visible = mockMenu.style.display === "block";
+      mockMenu.style.display = visible ? "none" : "block";
+    }
+  });
+
+  window.addEventListener("devicemotion", handleShake);
+
+  actualizarTitulo();
+  obtenerClima();
+}
+
+function handleShake(event) {
+  const intensidad = Math.abs(event.acceleration.x) + Math.abs(event.acceleration.y);
+  const ahora = Date.now();
+  if (intensidad > 25 && ahora - lastShake > 1000) {
+    lastShake = ahora;
+    if (!haVibradoYa) {
+      toggleMenuBarrio();
+      haVibradoYa = true;
+    }
   }
 }
 
-function animarTransicion() {
-  const elementos = [
-    document.getElementById("app"),
-    document.getElementById("prevision"),
-    document.getElementById("logo"),
-    document.getElementById("info-clima")
-  ];
-
-  elementos.forEach(el => {
-    if (!el) return;
-    el.classList.remove("show");
-    el.classList.add("fade-in-up");
-    setTimeout(() => el.classList.add("show"), 10);
-  });
+function toggleMenuBarrio() {
+  const menu = document.getElementById("barrio-menu");
+  if (!menuVisible) {
+    menu.style.display = "block";
+    menu.classList.remove("ocultar-popup");
+    menu.classList.add("mostrar-popup");
+  } else {
+    menu.classList.remove("mostrar-popup");
+    menu.classList.add("ocultar-popup");
+    setTimeout(() => menu.style.display = "none", 400);
+  }
+  menuVisible = !menuVisible;
 }
 
-async function vaALlover() {
-  animarTransicion();
+function actualizarTitulo() {
+  const logo = document.getElementById("logo");
+  if (barrio === "cuchillo") logo.textContent = "¿Va a llover en el barrio de navajero?";
+  else if (barrio === "elfo") logo.textContent = "¿Va a llover en el barrio elfo?";
+  else logo.textContent = "¿Va a llover en Madrid?";
+}
 
-  let API_URL = "https://wttr.in/Madrid?format=j1";
-  if (barrio === "cuchillo") API_URL = "https://wttr.in/40.3811929,-3.73797568773365?format=j1";
-  if (barrio === "elfo") API_URL = "https://wttr.in/40.434501831261166,-3.651017187763704?format=j1";
+function obtenerClima() {
+    if (mockClima && datosSimulados[mockClima]) {
+      actualizarUI(datosSimulados[mockClima]);
+      cargarEfecto(datosSimulados[mockClima].desc);
+      return;
+    }
+  
+    let API_URL = "https://wttr.in/Madrid?format=j1";
+    if (barrio === "cuchillo") API_URL = "https://wttr.in/40.3811929,-3.73797568773365?format=j1";
+    if (barrio === "elfo") API_URL = "https://wttr.in/40.434501831261166,-3.651017187763704?format=j1";
+  
+    fetch(API_URL)
+      .then(res => res.json())
+      .then(data => {
+        const current = data.current_condition[0];
+        const clima = {
+          desc: current.lang_es[0].value,
+          temp: current.temp_C,
+          feelsLike: current.FeelsLikeC,
+          humidity: current.humidity,
+          chanceofrain: data.weather[0].hourly.slice(0, 5).map(h => h.chanceofrain)
+        };
+        actualizarUI(clima);
+        cargarEfecto(clima.desc);
+      })
+      .catch(() => {
+        document.getElementById("respuesta").innerHTML = `<div class='texto'>Error al cargar clima</div>`;
+      });
+  }
+  
 
+function actualizarUI({ desc, temp, feelsLike, humidity, chanceofrain }) {
   const respuesta = document.getElementById("respuesta");
-  const rainCanvas = document.getElementById("rain");
-  const particlesCanvas = document.getElementById("particles");
+  const humedad = document.getElementById("humedad");
+  const sensacion = document.getElementById("sensacion");
+  const horas = document.getElementById("horas-lluvia");
+  const info = document.getElementById("info-clima");
 
-  try {
-    const res = await fetch(API_URL);
-    const data = await res.json();
+  const estaLloviendo = /rain|thunder/i.test(desc);
+  const emoji = obtenerEmoji(desc);
+  const mensaje = estaLloviendo
+    ? `Sí, está lloviendo ahora mismo.`
+    : `No está lloviendo. Ahora está: ${desc}`;
+  
+  respuesta.innerHTML = `<div class='emoji'>${emoji}</div><div class='temp'>${temp}°</div><div class='texto'>${mensaje}</div>`;  humedad.textContent = `Humedad: ${humidity}%`;
+  sensacion.textContent = `Sensación térmica: ${feelsLike}°C`;
+  horas.innerHTML = chanceofrain.map((val, i) => `<div><strong>+${i * 3}h</strong>${val}%</div>`).join("");
+  const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  info.textContent = `Actualizado: ${hora}`;
+  aplicarFondo(desc);
+}
 
-    if (mockClima) {
-      data.current_condition[0].weatherDesc[0].value = mockClima;
-      data.current_condition[0].temp_C = "16";
-      data.current_condition[0].FeelsLikeC = "14";
-      data.current_condition[0].humidity = "78";
+function obtenerEmoji(desc) {
+    const texto = desc.toLowerCase();
+  
+    if (texto.includes("soleado") || texto.includes("sol")) return "☀️";
+    if (texto.includes("tormenta")) return "⛈️";
+    if (texto.includes("lluvia")) return "🌧️";
+    if (texto.includes("nieve")) return "❄️";
+    if (texto.includes("niebla") || texto.includes("bruma")) return "🌫️";
+  
+    return "☁️"; // por defecto, nubes
+  }
 
-      const lluviaAlta = ["Light rain", "Thunderstorm", "Snow"];
-      for (let i = 0; i < data.weather[0].hourly.length; i++) {
-        data.weather[0].hourly[i].chanceofrain = lluviaAlta.includes(mockClima) ? "90" : "5";
-      }
-    }
+function aplicarFondo(desc) {
+  const body = document.body;
+  body.className = "";
 
-    const logo = document.getElementById("logo");
-    if (logo) {
-      if (barrio === "cuchillo") {
-        logo.textContent = "¿Va a llover en el barrio navajero?";
-      } else if (barrio === "elfo") {
-        logo.textContent = "¿Va a llover en el barrio elfo?";
-      } else {
-        logo.textContent = "¿Va a llover en Madrid?";
-      }
-    }
+  const texto = desc.toLowerCase();
+  let clase = "fondo-clouds";
 
-    const condition = data.current_condition[0];
-    const desc = condition.weatherDesc[0].value.toLowerCase();
-    const temp = condition.temp_C;
-    const feelsLike = condition.FeelsLikeC;
-    const humidity = condition.humidity;
+  if (texto.includes("soleado") || texto.includes("sol")) clase = "fondo-sun";
+  else if (texto.includes("lluvia")) clase = "fondo-rain";
+  else if (texto.includes("tormenta")) clase = "fondo-storm";
+  else if (texto.includes("nieve")) clase = "fondo-snow";
+  else if (texto.includes("niebla") || texto.includes("bruma")) clase = "fondo-fog";
 
-    const emojis = {
-      rain: "🌧️", drizzle: "🌦️", shower: "🌧️", thunderstorm: "⛈️", snow: "❄️",
-      fog: "🌫️", mist: "🌫️", haze: "🌫️", clouds: "☁️", overcast: "☁️",
-      clear: "☀️", sunny: "☀️"
-    };
+  setTimeout(() => body.classList.add(clase), 50);
+}
 
-    let emoji = "🌤️";
-    for (let key in emojis) {
-      if (desc.includes(key)) {
-        emoji = emojis[key];
-        break;
-      }
-    }
+function cargarEfecto(desc) {
 
-    const esLluvia = desc.includes("rain") || desc.includes("lluvia") || desc.includes("drizzle") || desc.includes("shower") || desc.includes("thunderstorm");
-
-    const mensaje = esLluvia
-      ? "Llueve ahora mismo"
-      : "No llueve en Madrid";
-
-    if (esLluvia) {
-      document.body.style.background = "linear-gradient(135deg, #60a5fa, #2563eb)";
-      rainCanvas.style.display = "block";
-      particlesCanvas.style.display = "none";
-    } else {
-      document.body.style.background = "";
-      rainCanvas.style.display = "none";
-      particlesCanvas.style.display = "block";
-    }
-
-    respuesta.innerHTML = `
-      <div class="emoji">${emoji}</div>
-      <div class="temp">${temp}°C</div>
-      <div class="texto">${mensaje}</div>
-    `;
-
-    const humedad = document.getElementById("humedad");
-    const sensacion = document.getElementById("sensacion");
-    if (humedad) humedad.textContent = `Humedad: ${humidity}%`;
-    if (sensacion) sensacion.textContent = feelsLike !== temp ? `Sensación: ${feelsLike}°C` : "";
-
-    const ahora = new Date().toLocaleTimeString("es-ES", {
-      timeZone: "Europe/Madrid",
-      hour: '2-digit',
-      minute: '2-digit'
+    // Limpiar todos los canvas de efectos
+    const rain = document.getElementById("rain");
+    const particles = document.getElementById("particles");
+  
+    [rain, particles].forEach(c => {
+      c.style.display = "none";
+      c.dataset.active = "false";
     });
 
-    const infoClima = document.getElementById("info-clima");
-    if (infoClima) infoClima.textContent = `Actualizado: ${ahora}`;
-
-    const ahoraMadrid = new Date().toLocaleString("en-US", { timeZone: "Europe/Madrid" });
-    const horaActual = new Date(ahoraMadrid).getHours();
-
-    const contenedor = document.getElementById("horas-lluvia");
-    const horasHoy = data.weather[0].hourly;
-    const horasManana = data.weather[1]?.hourly || [];
-
-    const procesarHoras = (horas, offset = 0) =>
-      horas.map(hora => {
-        const horaNum = parseInt(hora.time, 10);
-        const horaReal = horaNum === 0 ? 0 : horaNum / 100;
-        return { ...hora, horaReal: horaReal + offset };
-      });
-
-    const hoyFuturas = procesarHoras(horasHoy).filter(h => h.horaReal > horaActual);
-    const mananaProcesadas = procesarHoras(horasManana, 24);
-    const todas = [...hoyFuturas, ...mananaProcesadas].slice(0, 5);
-
-    if (contenedor) {
-      contenedor.innerHTML = todas.length === 0
-        ? `<div>No hay datos próximos 🌙</div>`
-        : todas.map(h => {
-            const lluvia = parseInt(h.chanceofrain, 10);
-            const icono = lluvia >= 70 ? "🌧️" : lluvia >= 30 ? "🌦️" : "☀️";
-            const horaMostrar = h.horaReal >= 24 ? `${h.horaReal - 24}h mañana` : `${h.horaReal}h`;
-            return `<div>${horaMostrar}<br>${icono}<br>${lluvia}%</div>`;
-          }).join("");
-    }
-
-    const todasLluviaAlta = todas.length && todas.every(h => parseInt(h.chanceofrain, 10) >= 70);
-    document.body.classList.toggle("modo-paraguas", todasLluviaAlta);
-
-  } catch (err) {
-    console.error(err);
-    if (respuesta) {
-      respuesta.innerHTML = `
-        <div class="emoji">⚠️</div>
-        <div class="temp">--</div>
-        <div class="texto">Error al obtener datos</div>
-      `;
-    }
-  }
-}
-
-// === EVENTOS ===
-document.addEventListener("DOMContentLoaded", () => {
-  aplicarTemaAutomatico();
-  vaALlover();
-  setInterval(vaALlover, 120000);
-});
-
-// Tecla M: menú de simulación
-document.addEventListener("keydown", (e) => {
-  if (e.key.toLowerCase() === "m") {
-    const menu = document.getElementById("mock-menu");
-    if (menu) menu.style.display = menu.style.display === "none" ? "block" : "none";
-  }
-});
-
-const select = document.getElementById("mock-select");
-if (select) {
-  select.addEventListener("change", () => {
-    mockClima = select.value;
-    vaALlover();
-  });
-}
-
-// Tecla B: menú de barrios
-document.addEventListener("keydown", (e) => {
-  if (e.key.toLowerCase() === "b") {
-    const menu = document.getElementById("barrio-menu");
-    if (menu) menu.style.display = menu.style.display === "none" ? "block" : "none";
-  }
-});
-
-// Botones del menú de barrios
-const barrioBtns = document.querySelectorAll("#barrio-options button");
-barrioBtns.forEach(btn => {
-  btn.addEventListener("click", () => {
-    barrio = btn.dataset.barrio;
-    if (navigator.vibrate) navigator.vibrate(60);
-    vaALlover();
-  });
-});
-
-// Agitar para mostrar/ocultar menú barrio con animación
-function detectarShake(event) {
-    const aceleracion = event.accelerationIncludingGravity;
-    const intensidad = Math.abs(aceleracion.x) + Math.abs(aceleracion.y) + Math.abs(aceleracion.z);
-    const now = Date.now();
-  
-    if (intensidad > 25 && now - lastShake > 1000) {
-      lastShake = now;
-      const menu = document.getElementById("barrio-menu");
-      if (!menu) return;
-  
-      // Limpieza previa
-      menu.classList.remove("mostrar-popup", "ocultar-popup");
-      void menu.offsetWidth;
-  
-      if (!menuVisible) {
-        menu.classList.add("mostrar-popup");
-        menu.style.display = "block";
-        menuVisible = true;
-  
-        if (!haVibradoYa && navigator.vibrate) {
-          navigator.vibrate(100);
-          haVibradoYa = true;
-        }
-      } else {
-        menu.classList.add("ocultar-popup");
-        setTimeout(() => {
-          menu.style.display = "none";
-        }, 400);
-        menuVisible = false;
-        haVibradoYa = false;
+    if (typeof lightningIntervalId !== 'undefined') {
+        clearInterval(lightningIntervalId);
+        lightningIntervalId = undefined;
       }
+  
+    // Eliminar script anterior si existe
+    if (scriptClimaActivo) {
+      document.body.removeChild(scriptClimaActivo);
+      scriptClimaActivo = null;
     }
+  
+    const efectos = {
+      "Sunny": "particles.js",
+      "Light rain": "rain.js",
+      "Thunderstorm": "storm.js",
+      "Snow": "snow.js",
+      "Fog": "fog.js"
+    };
+  
+    const script = document.createElement("script");
+    script.src = efectos[desc] || "clouds.js";
+    script.async = true;
+    document.body.appendChild(script);
+    scriptClimaActivo = script;
   }
   
-
-if (window.DeviceMotionEvent) {
-  window.addEventListener("click", () => {
-    window.addEventListener("devicemotion", detectarShake);
-  }, { once: true });
+function transicionBarrio() {
+  document.body.style.opacity = 0.7;
+  setTimeout(() => {
+    document.body.style.opacity = 1;
+  }, 300);
 }
-
-document.addEventListener("keydown", (e) => {
-    if (e.key.toLowerCase() === "s") {
-      detectarShake({
-        accelerationIncludingGravity: { x: 25, y: 25, z: 25 }
-      });
-    }
-  });

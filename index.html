@@ -7,15 +7,19 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- Canvas para efectos visuales -->
   <canvas id="particles"></canvas>
-  <canvas id="rain" style="display: none;"></canvas>
+  <canvas id="rain"></canvas>
 
+  <!-- Nubes decorativas -->
   <div class="cloud" style="top: 10%; animation-delay: 0s;"></div>
   <div class="cloud" style="top: 25%; animation-delay: 15s;"></div>
   <div class="cloud" style="top: 40%; animation-delay: 30s;"></div>
 
+  <!-- Título -->
   <h2 id="logo"></h2>
 
+  <!-- Contenido principal -->
   <div id="app">
     <div id="respuesta"></div>
     <div id="detalles">
@@ -24,14 +28,17 @@
     </div>
   </div>
 
+  <!-- Previsión futura -->
   <div id="prevision">
     <h3>¿Y luego podría llover?</h3>
     <div id="horas-lluvia">Cargando...</div>
   </div>
 
+  <!-- Info climática -->
   <div id="info-clima">Actualizado: --:--</div>
 
-  <div id="mock-menu" style="display: none;">
+  <!-- Menú de simulación -->
+  <div id="mock-menu">
     <label>Modo clima simulado:</label>
     <select id="mock-select">
       <option value="">(desactivado)</option>
@@ -43,7 +50,8 @@
     </select>
   </div>
 
-  <div id="barrio-menu" style="display: none;">
+  <!-- Menú de barrios -->
+  <div id="barrio-menu">
     <label>¿Desde qué barrio miras al cielo?</label>
     <div id="barrio-options">
       <button data-barrio="cuchillo">🔪</button>
@@ -51,8 +59,6 @@
     </div>
   </div>
 
-  <script src="main.js"></script>
-  <script src="particles.js"></script>
-  <script src="rain.js"></script>
+  <script src="main.js" defer></script>
 </body>
 </html>
