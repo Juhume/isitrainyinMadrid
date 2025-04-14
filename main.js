@@ -45,8 +45,51 @@ const datosSimulados = {
   }
 };
 
-window.addEventListener("DOMContentLoaded", () => {
+function crearMenuBarrio() {
+    const menu = document.createElement("div");
+    menu.id = "barrio-menu";
+    menu.style = `
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 260px;
+      max-width: 80%;
+      background: rgba(30,41,59,0.85);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      z-index: 10000;
+      backdrop-filter: blur(10px);
+      pointer-events: auto;
+      display: none;
+    `;
+  
+    menu.innerHTML = `
+      <label>¿Desde qué barrio miras al cielo?</label>
+      <div id="barrio-options">
+        <button data-barrio="cuchillo">🔪</button>
+        <button data-barrio="elfo">🧝</button>
+      </div>
+    `;
+  
+    document.body.appendChild(menu);
+  
+    // ✅ Importante: enganchar los botones después de insertar el HTML
+    const botones = menu.querySelectorAll("#barrio-options button");
+    botones.forEach(btn => {
+      btn.addEventListener("click", e => {
+        barrio = e.target.dataset.barrio;
+        obtenerClima(); // 🧠 esto carga el clima correctamente
+        toggleMenuBarrio(); // 🔁 cerrar el menú
+      });
+    });
+  }
+  
+
+window.addEventListener("DOMContentLoaded", () => { 
   setupInicial();
+  crearMenuBarrio();
 });
 
 function setupInicial() {
@@ -95,19 +138,20 @@ function handleShake(e) {
     }
   }
 
-function toggleMenuBarrio() {
-  const menu = document.getElementById("barrio-menu");
-  if (!menuVisible) {
-    menu.style.display = "block";
-    menu.classList.remove("ocultar-popup");
-    menu.classList.add("mostrar-popup");
-  } else {
-    menu.classList.remove("mostrar-popup");
-    menu.classList.add("ocultar-popup");
-    setTimeout(() => menu.style.display = "none", 400);
+  function toggleMenuBarrio() {
+    const menu = document.getElementById("barrio-menu");
+    if (!menuVisible) {
+      menu.style.display = "block";
+      menu.style.opacity = "1";
+    } else {
+      menu.style.opacity = "0";
+      setTimeout(() => {
+        menu.style.display = "none";
+      }, 300);
+    }
+    menuVisible = !menuVisible;
   }
-  menuVisible = !menuVisible;
-}
+  
 
 function actualizarTitulo() {
   const logo = document.getElementById("logo");
@@ -117,6 +161,7 @@ function actualizarTitulo() {
 }
 
 function obtenerClima() {
+    actualizarTitulo();
     if (mockClima && datosSimulados[mockClima]) {
       actualizarUI(datosSimulados[mockClima]);
       cargarEfecto(datosSimulados[mockClima].desc);

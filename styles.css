@@ -15,7 +15,8 @@
 body {
   font-family: 'Rubik', sans-serif;
   background: linear-gradient(135deg, #141e30, #243b55);
-  height: 100vh;
+  min-height: 100dvh; /* ✅ unidad segura en móviles modernos */
+  height: auto;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -241,41 +242,46 @@ canvas#rain {
   display: none;
 }
 @keyframes popupMagic {
-  0% {
-    opacity: 0;
-    transform: scale(0.9);
-    filter: brightness(1.3);
+    0% {
+      opacity: 0;
+      filter: brightness(1.3);
+    }
+    100% {
+      opacity: 1;
+      filter: brightness(1);
+    }
   }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-    filter: brightness(1);
+
+  @keyframes fadeOutMagic {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
   }
-}
 
-@keyframes fadeOutMagic {
-  0% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(0.9); }
-}
-
-#barrio-menu, #mock-menu {
-  position: fixed;
-  right: 20px;
-  background: rgba(30, 41, 59, 0.85);
-  color: white;
-  padding: 10px 15px;
-  border-radius: 10px;
-  font-size: 0.9rem;
-  z-index: 1000;
-  backdrop-filter: blur(10px);
+#barrio-menu,
+#mock-menu {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    max-width: 80%;
+    width: 260px;
+    background: rgba(30, 41, 59, 0.85);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    z-index: 10000;
+    backdrop-filter: blur(10px);
+    pointer-events: auto;
+    will-change: transform, opacity; /* ✅ evita glitches de stacking context */
+    animation: none !important; /* ✅ anula cualquier acumulación */
+    transition: none !important;
 }
 
 #barrio-menu {
   bottom: 80px;
-  max-width: 80%;
-  transform-origin: bottom right;
-  pointer-events: auto;
+  transform: none !important;
 }
+
 #mock-menu {
   bottom: 20px;
 }
@@ -283,10 +289,12 @@ canvas#rain {
 #barrio-menu.mostrar-popup {
   display: block !important;
   animation: popupMagic 0.4s ease forwards;
+  animation-fill-mode: forwards;
 }
 
 #barrio-menu.ocultar-popup {
   animation: fadeOutMagic 0.4s ease forwards;
+  animation-fill-mode: forwards;
   pointer-events: none;
 }
 
@@ -301,9 +309,7 @@ canvas#rain {
   padding: 6px 10px;
   transition: transform 0.2s ease;
 }
-#barrio-options button:hover {
-  transform: scale(1.2);
-}
+
 
 /* ----------------------------------- */
 /* RESPONSIVE */
