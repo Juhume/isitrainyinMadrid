@@ -2,44 +2,40 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
   <title>¿Va a llover en Madrid?</title>
   <link rel="stylesheet" href="styles.css" />
-</head>
+  </head>
 <body>
-  <!-- Canvas para efectos visuales -->
-  <canvas id="particles"></canvas>
-  <canvas id="rain"></canvas>
-
-  <!-- Nubes decorativas -->
-  <div class="cloud" style="top: 10%; animation-delay: 0s;"></div>
-  <div class="cloud" style="top: 25%; animation-delay: 15s;"></div>
-  <div class="cloud" style="top: 40%; animation-delay: 30s;"></div>
-
-  <!-- Título -->
-  <h2 id="logo"></h2>
-
-  <!-- Contenido principal -->
+    <canvas id="particles-canvas"></canvas>
+    <canvas id="weather-canvas"></canvas>
+    <canvas id="rain"></canvas>
+    <h2 id="logo"></h2>
+    
   <div id="app">
-    <div id="respuesta"></div>
+    <div id="respuesta" aria-live="polite">Cargando clima...</div>
     <div id="detalles">
-      <div id="humedad"></div>
-      <div id="sensacion"></div>
-    </div>
+        <div id="humedad"></div>
+        <div id="sensacion"></div>
+      </div>
+      
+      <div id="sol-info">
+        <div id="salida-sol"></div>
+        <div id="puesta-sol"></div>
+      </div>
   </div>
 
-  <!-- Previsión futura -->
+  <div id="alerta-paraguas" class="alerta-paraguas" role="alert" aria-live="polite"></div>
+
   <div id="prevision">
-    <h3>¿Y luego podría llover?</h3>
-    <div id="horas-lluvia">Cargando...</div>
+    <h3>¿Y en las próximas horas?</h3>
+    <div id="horas-lluvia">--</div>
   </div>
 
-  <!-- Info climática -->
   <div id="info-clima">Actualizado: --:--</div>
 
-  <!-- Menú de simulación -->
-  <div id="mock-menu">
-    <label>Modo clima simulado:</label>
+  <div id="mock-menu" style="display: none;">
+    <label for="mock-select">Modo clima simulado:</label>
     <select id="mock-select">
       <option value="">(desactivado)</option>
       <option value="Sunny">☀️ Soleado</option>
@@ -47,9 +43,10 @@
       <option value="Thunderstorm">⛈️ Tormenta</option>
       <option value="Fog">🌫️ Niebla</option>
       <option value="Snow">❄️ Nieve</option>
+      <option value="Clear">🌙 Despejado (Noche)</option>
     </select>
   </div>
 
   <script src="main.js" defer></script>
-</body>
+  </body>
 </html>

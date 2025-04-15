@@ -1,7 +1,8 @@
 /* ----------------------------------- */
-/* FONTS Y RESET */
+/* FUENTES Y RESET */
 /* ----------------------------------- */
-@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap');
+/* Sugerencia Visual: Para un look diferente, prueba fuentes como 'Poppins', 'Nunito' o 'Lato' */
 
 * {
   box-sizing: border-box;
@@ -10,98 +11,100 @@
 }
 
 /* ----------------------------------- */
+/* VARIABLES CSS (CUSTOM PROPERTIES) */
+/* Facilita la gestión de temas y colores */
+/* ----------------------------------- */
+:root {
+  /* Paleta de Colores Base */
+  --text-color-primary: #ffffff;
+  --text-color-secondary: #e0e0e0;
+  --text-color-muted: rgba(255, 255, 255, 0.7);
+  --text-color-error: #ffdddd;
+  --app-bg: rgba(30, 41, 59, 0.7); /* Un poco más opaco para legibilidad */
+  --app-border: rgba(255, 255, 255, 0.15);
+  --app-shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
+  --blur-intensity: 10px; /* Variable para controlar el blur */
+  --menu-bg: rgba(30, 41, 59, 0.9);
+
+  /* Gradientes de Fondo por Clima */
+  --bg-gradient-default: linear-gradient(135deg, #0f172a, #1e293b); /* Noche/Defecto */
+  --bg-gradient-sun: linear-gradient(-45deg, #fcd34d, #fbbf24, #f59e0b, #fde68a);
+  --bg-gradient-rain: linear-gradient(160deg, #3b82f6, #2563eb);
+  --bg-gradient-storm: linear-gradient(160deg, #1e3a8a, #172554);
+  --bg-gradient-snow: linear-gradient(135deg, #e0f2fe, #bfdbfe);
+  --bg-gradient-fog: linear-gradient(135deg, #94a3b8, #64748b);
+  --bg-gradient-clouds: linear-gradient(135deg, #64748b, #475569);
+  --bg-gradient-clear-night: linear-gradient(135deg, #0f172a, #312e81); /* Noche despejada */
+
+  /* Tiempos de Transición */
+  --transition-bg: background 1.8s cubic-bezier(0.4, 0, 0.2, 1); /* Más suave */
+  --transition-fade: opacity 0.4s ease-in-out;
+  --transition-transform: transform 0.3s ease;
+}
+
+/* ----------------------------------- */
 /* BODY Y FONDOS DINÁMICOS */
 /* ----------------------------------- */
 body {
   font-family: 'Rubik', sans-serif;
-  background: linear-gradient(135deg, #141e30, #243b55);
-  min-height: 100dvh; /* ✅ unidad segura en móviles modernos */
-  height: auto;
+  background: var(--bg-gradient-default);
+  height: 100dvh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  transition: background 1.5s ease-in-out;
-  padding: 20px;
+  padding: 15px 12px 100px;
+  padding-top: 50px;
+  color: var(--text-color-primary);
+  box-sizing: border-box;
 }
 
-body.fondo-sun,
-body.modo-dia {
-  background: linear-gradient(-45deg, #fcd34d, #fbbf24, #fde68a, #f59e0b);
-  background-size: 400% 400%;
-  animation: sunnyFlow 20s ease infinite;
+@supports (padding: max(0px)) {
+  body {
+    font-family: 'Rubik', sans-serif;
+    background: var(--bg-gradient-default);
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 15px 12px 100px;
+    padding-top: 50px;
+    color: var(--text-color-primary);
+    box-sizing: border-box;
+  }
 }
 
-body.modo-noche {
-  background: linear-gradient(135deg, #0f172a, #1e293b);
-}
+/* Aplicación de fondos SIN !important */
+body.fondo-sun { background: var(--bg-gradient-sun); background-size: 400% 400%; animation: sunnyFlow 20s ease infinite; }
+body.fondo-rain { background: var(--bg-gradient-rain); }
+body.fondo-storm { background: var(--bg-gradient-storm); }
+body.fondo-snow { background: var(--bg-gradient-snow); color: #334155; } /* Texto más oscuro para nieve */
+body.fondo-snow #app, body.fondo-snow #prevision, body.fondo-snow #info-clima { color: #334155; }
+body.fondo-snow #app { --app-bg: rgba(255, 255, 255, 0.6); --app-border: rgba(100, 116, 139, 0.3); }
+body.fondo-snow #horas-lluvia div { background: rgba(100, 116, 139, 0.1); }
+body.fondo-fog { background: var(--bg-gradient-fog); }
+body.fondo-clouds { background: var(--bg-gradient-clouds); }
+body.fondo-clear-night { background: var(--bg-gradient-clear-night); }
 
-body.fondo-rain,
-body.modo-paraguas {
-  background: linear-gradient(135deg, #60a5fa, #2563eb) !important;
-}
-
-body.fondo-storm {
-  background: linear-gradient(135deg, #1e3a8a, #1e40af);
-}
-
-body.fondo-snow {
-  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
-}
-
-body.fondo-fog {
-  background: linear-gradient(135deg, #cbd5e1, #94a3b8);
-}
-
-body.fondo-clouds {
-  background: linear-gradient(135deg, #94a3b8, #64748b);
-}
-
-canvas#particles,
+/* ----------------------------------- */
+/* CANVAS PARA EFECTOS */
+/* ----------------------------------- */
+canvas#particles-canvas,
+canvas#weather-canvas,
 canvas#rain {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 0;
+  z-index: -1; /* Detrás de todo */
   width: 100%;
   height: 100%;
   pointer-events: none;
-}
-
-/* ----------------------------------- */
-/* NUBES DECORATIVAS */
-/* ----------------------------------- */
-.cloud {
-  position: absolute;
-  width: 200px;
-  height: 60px;
-  background: #fff;
-  border-radius: 50%;
-  filter: blur(25px);
-  opacity: 0.05;
-  animation: cloudFloat 60s linear infinite;
-  z-index: 2;
-}
-.cloud::after,
-.cloud::before {
-  content: "";
-  position: absolute;
-  background: #fff;
-  border-radius: 50%;
-  filter: blur(25px);
-}
-.cloud::before {
-  width: 100px;
-  height: 100px;
-  left: -50px;
-  top: -20px;
-}
-.cloud::after {
-  width: 120px;
-  height: 120px;
-  right: -60px;
-  top: -40px;
+  display: none; /* Ocultos hasta que JS los active */
+  opacity: 0;
+  transition: var(--transition-fade);
 }
 
 /* ----------------------------------- */
@@ -109,213 +112,739 @@ canvas#rain {
 /* ----------------------------------- */
 #logo {
   position: absolute;
-  top: 10px;
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.4);
+  top: 15px; /* Un poco más de espacio */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.9rem; /* Ligeramente más pequeño */
+  font-weight: 400;
+  color: var(--text-color-muted);
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 2px; /* Más espaciado */
   z-index: 10;
   text-align: center;
+  width: 90%; /* Para que no se corte en pantallas pequeñas */
 }
 
 #app {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(16px);
-  border-radius: 1.5rem;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
-  padding: 2rem;
-  width: 90%;
-  max-width: 340px;
-  z-index: 10;
+  background: var(--app-bg);
+  border: 1px solid var(--app-border);
+  backdrop-filter: blur(var(--blur-intensity));
+  -webkit-backdrop-filter: blur(var(--blur-intensity)); /* Para Safari */
+  border-radius: 1.25rem; /* 20px */
+  box-shadow: var(--app-shadow);
+  padding: 1.5rem 1.2rem;
+  width: 100%;
+  max-width: 400px; /* Limita ancho máximo */
+  margin: 10px auto;
+  z-index: 5; /* Encima del canvas */
   text-align: center;
-  animation: fadeInApp 1.2s ease forwards;
-  transition: all 0.5s ease;
+  animation: fadeInApp 1s ease-out forwards;
+  transition: background 0.5s ease, border 0.5s ease, color 0.5s ease;
+  box-sizing: border-box;
 }
 
 #respuesta {
-  font-size: 2.2rem;
-  font-weight: 600;
-  color: #fff;
-  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-  line-height: 1.3;
+  font-size: 1.8rem; /* Ligeramente más pequeño para acomodar más texto */
+  font-weight: 400;
+  color: var(--text-color-primary);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  line-height: 1.4;
   margin-bottom: 1rem;
+  min-height: 90px; /* Altura mínima reducida */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 #respuesta .emoji {
-  font-size: 4rem;
-  margin-bottom: 1rem;
+  font-size: 3.5rem; /* Ligeramente más pequeño */
+  margin-bottom: 0.75rem;
+  line-height: 1;
 }
 #respuesta .temp {
-  font-size: 2.5rem;
+  font-size: 2.8rem; /* Ligeramente más grande */
   font-weight: 500;
-  color: #ffffff;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  color: var(--text-color-primary);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   margin-bottom: 0.5rem;
+  line-height: 1;
 }
 #respuesta .texto {
-  font-size: 1.2rem;
-  color: #e0e0e0;
+  font-size: 1.1rem; /* Más pequeño para descripciones */
+  color: var(--text-color-secondary);
   font-weight: 300;
-  line-height: 1.4;
+  line-height: 1.5;
   padding: 0 10px;
+}
+#respuesta .error { /* Estilo para mensajes de error */
+    color: var(--text-color-error);
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+#detalles, 
+#sol-info {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* separación entre elementos */
+  font-size: 0.9rem;
+  color: var(--text-color-secondary);
+  margin-top: 0.5rem; /* separación vertical */
+  font-weight: 300;
+}
+
+#sol-info {
+  font-size: 0.85rem; 
 }
 
 #info-clima {
   position: absolute;
-  bottom: 10px;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
+  bottom: 15px;
+  left: 0;
+  right: 0;
   text-align: center;
-  width: 100%;
+  font-size: 0.8rem;
+  color: var(--text-color-muted);
   z-index: 10;
 }
 
 #prevision {
-  margin-top: 1.5rem;
+  margin-top: 10px;
+  margin-bottom: 20px;
   text-align: center;
-  color: #ffffffcc;
-  font-size: 0.95rem;
-  z-index: 10;
-}
-#prevision h3 {
+  color: var(--text-color-secondary);
   font-size: 1rem;
-  margin-bottom: 0.5rem;
-  color: #fff;
+  z-index: 5;
+  width: 100%;
+  max-width: 400px; /* Limita ancho máximo */
+  position: relative;
+  padding-bottom: 40px;
 }
-#prevision h3::after {
-  content: ' ¡Coge el paraguas! ☂️';
-  color: #93c5fd;
-  font-size: 0.95rem;
-  display: block;
-  margin-top: 0.3rem;
-  animation: fadeIn 1s ease forwards;
+@media (max-width: 480px) {
+  #prevision {
+    padding-bottom: 35px;
+  }
 }
 
+#prevision h3 {
+  font-size: 0.9rem; /* Más pequeño */
+  font-weight: 400;
+  margin-bottom: 0.8rem;
+  color: var(--text-color-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.alerta-paraguas {
+    margin: 1rem auto;
+    width: calc(100% - 20px); /* Margen de 10px a cada lado */
+    max-width: 380px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #facc15; /* Amarillo claro */
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    font-weight: 500;
+    text-align: center;
+    backdrop-filter: blur(6px);
+    display: none;
+    animation: fadeInApp 0.6s ease-out forwards;
+    box-sizing: border-box;
+  }
+  
+
+/* Mejora del contenedor principal de previsión de horas */
 #horas-lluvia {
   display: flex;
-  justify-content: center;
-  gap: 14px;
   flex-wrap: wrap;
-  font-size: 0.9rem;
+  justify-content: center;
+  gap: 10px; /* Gap unificado */
+  width: 100%;
+  max-width: 450px;
+  margin: 15px auto 45px;
+  padding: 5px 0 30px;
+  box-sizing: border-box;
+  overflow: visible;
+  position: relative;
 }
-#horas-lluvia div {
+
+/* Estilos base para todas las tarjetas de previsión */
+.hora-prevision {
+  position: relative;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 15px 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: rgba(255,255,255,0.08);
-  border-radius: 0.75rem;
-  padding: 0.5rem 0.75rem;
-  min-width: 50px;
-  color: #fff;
+  justify-content: space-between;
+  box-sizing: border-box;
+  transition: transform 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Efecto hover unificado */
+.hora-prevision:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Pantallas grandes: 5 elementos por fila */
+@media (min-width: 601px) {
+  .hora-prevision {
+    flex: 0 0 calc(20% - 10px);
+    max-width: calc(20% - 10px);
+    height: 105px;
+  }
+}
+
+/* Pantallas pequeñas: distribución 3+2 */
+@media (max-width: 600px) {
+  .hora-prevision {
+    height: 100px;
+  }
+  
+  .hora-prevision:nth-child(-n+3) {
+    flex: 0 0 calc(33.333% - 10px);
+    max-width: calc(33.333% - 10px);
+  }
+  
+  .hora-prevision:nth-child(n+4) {
+    flex: 0 0 calc(50% - 10px);
+    max-width: calc(50% - 10px);
+    margin-top: 10px;
+  }
+}
+
+/* Solo para dispositivos extremadamente pequeños */
+@media (max-width: 359px) {
+  #horas-lluvia {
+    gap: 10px;
+  }
+  
+  .hora-prevision:nth-child(-n+3) {
+    flex: 0 0 calc(33.333% - 10px);
+    max-width: calc(33.333% - 10px);
+  }
+  
+  .hora-prevision:nth-child(n+4) {
+    flex: 0 0 calc(50% - 10px);
+    max-width: calc(50% - 10px);
+    margin-top: 10px;
+  }
+}
+
+/* Mejora del tamaño del icono */
+.hora-icono {
+  font-size: 1.8rem !important;
+  margin: 4px 0 !important;
+  line-height: 1;
+}
+
+/* Mejora del valor de la hora */
+.hora-valor {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 5px;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* Estilo para "hoy"/"mañana" */
+.dia-prevision {
+  display: block;
+  font-size: 0.7rem;
+  opacity: 0.8;
+  font-weight: 300;
+}
+
+/* Porcentaje */
+.porcentaje {
+  position: static;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin-top: 8px;
+  line-height: 1;
+  white-space: nowrap;
+  display: inline-block;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Estilos según el nivel de probabilidad */
+.prob-alta .porcentaje {
+  background: #1d4ed8; /* Azul oscuro */
+  color: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.prob-media .porcentaje {
+  background: #60a5fa; /* Azul medio */
+  color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.prob-baja .porcentaje {
+  background: rgba(255, 255, 255, 0.2); /* Fondo sutil */
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Hover effect subtil */
+.hora-prevision:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Para pantallas grandes (>=601px) - 5 elementos por fila */
+@media (min-width: 601px) {
+  .hora-prevision {
+    flex: 0 0 calc(20% - 10px);
+    max-width: calc(20% - 10px);
+    height: 105px;
+  }
+}
+
+/* Para pantallas pequeñas (<=600px) - Distribución 3+2 */
+@media (max-width: 600px) {
+  /* Todos los elementos: ajustes básicos */
+  .hora-prevision {
+    height: 100px;
+  }
+  
+  /* Primeros 3 elementos - ocupan 1/3 cada uno (primera fila) */
+  .hora-prevision:nth-child(-n+3) {
+    flex: 0 0 calc(33.333% - 10px);
+    max-width: calc(33.333% - 10px);
+  }
+  
+  /* Últimos 2 elementos - ocupan 1/2 cada uno (segunda fila) */
+  .hora-prevision:nth-child(n+4) {
+    flex: 0 0 calc(50% - 10px);
+    max-width: calc(50% - 10px);
+    margin-top: 10px; /* Espacio entre filas */
+  }
+  
+  #horas-lluvia {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .hora-icono {
+    font-size: 1.6rem !important;
+  }
+}
+
+/* Responsive para diferentes tamaños de pantalla */
+@media (max-width: 768px) {
+  #barrio-menu, #mock-menu {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%) translateY(15px);
+    width: calc(100% - 40px);
+    max-width: 350px;
+  }
+  
+  #barrio-menu.visible, #mock-menu.visible {
+    transform: translateX(-50%) translateY(0);
+  }
+  
+  #app {
+    max-width: 450px;
+    width: calc(100% - 16px);
+    margin: 8px auto;
+    padding: 1.6rem 1.2rem;
+  }
+}
+
+/* ----------------------------------- */
+/* MENÚS (BARRIO Y MOCK) */
+/* ----------------------------------- */
+#barrio-menu,
+#mock-menu {
+  position: fixed;
+  right: 20px;
+  width: 280px; /* Ligeramente más ancho */
+  max-width: calc(100% - 40px); /* Asegura padding en pantallas muy pequeñas */
+  background: var(--menu-bg);
+  color: var(--text-color-primary);
+  padding: 15px 20px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  z-index: 10000;
+  backdrop-filter: blur(var(--blur-intensity));
+  -webkit-backdrop-filter: blur(var(--blur-intensity));
+  pointer-events: none; /* Desactivado hasta que se muestre */
+  opacity: 0;
+  transform: translateY(15px); /* Empieza ligeramente abajo */
+  transition: opacity var(--transition-fade), transform var(--transition-transform);
+  box-shadow: var(--app-shadow);
+}
+
+#barrio-menu { bottom: 80px; }
+#mock-menu { bottom: 20px; }
+
+#barrio-menu.visible,
+#mock-menu.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto; /* Activado cuando es visible */
+}
+
+#barrio-menu label,
+#mock-menu label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--text-color-secondary);
+}
+
+#barrio-options {
+  display: flex;
+  gap: 10px;
+  justify-content: center; /* Centra los botones */
+  margin-top: 10px;
+}
+
+#barrio-options button {
+  background: none;
+  border: 1px solid var(--app-border);
+  color: var(--text-color-primary);
+  font-size: 1.8rem; /* Más grandes */
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  line-height: 1; /* Ajuste para emojis */
+}
+
+#barrio-options button:hover,
+#barrio-options button:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05); /* Feedback visual */
+  outline: none;
+}
+
+#mock-menu select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--app-border);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-color-primary);
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+#mock-menu select:focus {
+  outline: none;
+  border-color: var(--text-color-secondary);
 }
 
 /* ----------------------------------- */
 /* ANIMACIONES */
 /* ----------------------------------- */
 @keyframes fadeInApp {
-  from { transform: translateY(20px); opacity: 0; }
+  from { transform: translateY(15px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes cloudFloat {
-  from { left: -300px; }
-  to { left: 120%; }
-}
-
-@keyframes sunnyFlow {
+@keyframes sunnyFlow { /* Mantenida igual */
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
 /* ----------------------------------- */
-/* MENÚS (BARRIO Y MOCK) */
+/* RESPONSIVE MEJORADO */
 /* ----------------------------------- */
 
-#barrio-menu,
-#mock-menu {
-  display: none;
-}
-@keyframes popupMagic {
-    0% {
-      opacity: 0;
-      filter: brightness(1.3);
-    }
-    100% {
-      opacity: 1;
-      filter: brightness(1);
-    }
+/* Base para tablets */
+@media (max-width: 768px) {
+  body {
+    font-family: 'Rubik', sans-serif;
+    background: var(--bg-gradient-default);
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 15px 12px 100px;
+    padding-top: 50px;
+    color: var(--text-color-primary);
+    box-sizing: border-box;
   }
-
-  @keyframes fadeOutMagic {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
+  
+  #logo {
+    position: relative;
+    top: 10px;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+    letter-spacing: 1.5px;
   }
-
-#barrio-menu,
-#mock-menu {
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    max-width: 80%;
-    width: 260px;
-    background: rgba(30, 41, 59, 0.85);
-    color: white;
-    padding: 10px 15px;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    z-index: 10000;
-    backdrop-filter: blur(10px);
-    pointer-events: auto;
-    will-change: transform, opacity; /* ✅ evita glitches de stacking context */
-    animation: none !important; /* ✅ anula cualquier acumulación */
-    transition: none !important;
+  
+  #app, #prevision {
+    max-width: 450px;
+    width: calc(100% - 16px); /* 8px de margen a cada lado */
+    margin: 8px auto;
+    padding: 1.8rem 1.2rem;
+  }
+  
+  .alerta-paraguas {
+    max-width: 430px;
+  }
+  
+  #horas-lluvia {
+    width: 100%;
+    padding: 10px 8px;
+  }
+  
+  /* Mejora de los menús */
+  #barrio-menu, #mock-menu {
+    width: 90%;
+    max-width: 350px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%) translateY(15px);
+    }
+    
+  #barrio-menu.visible, #mock-menu.visible {
+    transform: translateX(-50%) translateY(0);
+  }
+  
+  #barrio-menu {
+    bottom: 90px;
+  }
+  
+  #mock-menu {
+    bottom: 20px;
+  }
 }
 
-#barrio-menu {
-  bottom: 80px;
-  transform: none !important;
-}
-
-#mock-menu {
-  bottom: 20px;
-}
-
-#barrio-menu.mostrar-popup {
-  display: block !important;
-  animation: popupMagic 0.4s ease forwards;
-  animation-fill-mode: forwards;
-}
-
-#barrio-menu.ocultar-popup {
-  animation: fadeOutMagic 0.4s ease forwards;
-  animation-fill-mode: forwards;
-  pointer-events: none;
-}
-
-#barrio-options button {
-  background: none;
-  border: 2px solid white;
-  color: white;
-  font-size: 1.5rem;
-  border-radius: 10px;
-  margin: 5px;
-  cursor: pointer;
-  padding: 6px 10px;
-  transition: transform 0.2s ease;
-}
-
-
-/* ----------------------------------- */
-/* RESPONSIVE */
-/* ----------------------------------- */
+/* Ajustes para tablets pequeñas */
 @media (max-width: 600px) {
-  #respuesta { font-size: 1.8rem; }
-  #app { padding: 1.5rem; }
-  .cloud { width: 120px; height: 40px; }
+  body {
+    font-family: 'Rubik', sans-serif;
+    background: var(--bg-gradient-default);
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 15px 12px 100px;
+    padding-top: 50px;
+    color: var(--text-color-primary);
+    box-sizing: border-box;
+  }
+  
+  #app, #prevision {
+    max-width: none;
+    width: calc(100% - 16px); /* 8px de margen a cada lado */
+    margin: 8px auto;
+  }
+  
+  #app {
+    padding: 1.5rem 1rem;
+  }
+  
+  #respuesta {
+    font-size: 1.6rem;
+    min-height: 100px; /* Altura reducida */
+  }
+  
+  #respuesta .emoji {
+    font-size: 3rem;
+  }
+  
+  #respuesta .temp {
+    font-size: 2.5rem;
+  }
+  
+  #respuesta .texto {
+    font-size: 1rem;
+  }
+  
+  #detalles, #sol-info {
+    font-size: 0.85rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px 25px;
+  }
+  
+  #info-clima {
+    bottom: 10px;
+    font-size: 0.75rem;
+  }
+  
+  /* Limitar ancho de menús en pantallas pequeñas */
+  #barrio-menu, #mock-menu {
+    width: calc(100% - 30px);
+    max-width: 350px;
+  }
+  
+  #horas-lluvia {
+    padding: 8px 4px;
+    gap: 8px;
+  }
+}
+
+/* Ajustes específicos para móviles */
+@media (max-width: 480px) {
+  body {
+    font-family: 'Rubik', sans-serif;
+    background: var(--bg-gradient-default);
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 15px 12px 100px;
+    padding-top: 50px;
+    color: var(--text-color-primary);
+    box-sizing: border-box;
+  }
+  
+  #logo {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    width: 95%;
+  }
+  
+  #app, #prevision {
+    width: calc(100% - 12px); /* 6px de margen a cada lado */
+    margin: 6px auto;
+  }
+  
+  #app {
+    padding: 1.2rem 0.9rem;
+    border-radius: 1rem;
+  }
+  
+  #respuesta {
+    min-height: 90px;
+    margin-bottom: 1rem;
+  }
+  
+  #respuesta .emoji {
+    font-size: 2.8rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  #respuesta .temp {
+    font-size: 2.3rem;
+  }
+  
+  #respuesta .texto {
+    font-size: 0.95rem;
+    padding: 0 5px;
+  }
+  
+  #detalles, #sol-info {
+    gap: 10px;
+    margin-top: 0.3rem;
+    font-size: 0.8rem;
+  }
+  
+  #prevision {
+    margin-top: 8px;
+    margin-bottom: 15px;
+  }
+  
+  #prevision h3 {
+    font-size: 0.8rem;
+    margin-bottom: 0.6rem;
+  }
+  
+  /* Ajustar el scroll horizontal para móviles */
+  #horas-lluvia {
+    gap: 6px;
+    padding: 6px 4px;
+    width: calc(100% - 8px); /* 4px de margen a cada lado */
+    margin: 0 auto;
+  }
+  
+  /* Ajuste de menús para móviles */
+  #barrio-menu, #mock-menu {
+    padding: 12px 15px;
+    border-radius: 10px;
+  }
+  
+  #barrio-options {
+    gap: 8px;
+  }
+  
+  #barrio-options button {
+    font-size: 1.5rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+  }
+  
+  #barrio-menu {
+    bottom: 70px;
+  }
+  
+  #mock-menu {
+    bottom: 15px;
+  }
+  
+  .alerta-paraguas {
+    width: calc(100% - 12px);
+    margin: 0.8rem auto;
+    padding: 0.7rem 0.8rem;
+  }
+}
+
+/* Pantallas muy pequeñas */
+@media (max-width: 360px) {
+  body {
+    font-family: 'Rubik', sans-serif;
+    background: var(--bg-gradient-default);
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 15px 12px 100px;
+    padding-top: 50px;
+    color: var(--text-color-primary);
+    box-sizing: border-box;
+  }
+  
+  #logo {
+    font-size: 0.75rem;
+  }
+  
+  #app, #prevision {
+    width: calc(100% - 8px); /* 4px de margen a cada lado */
+  }
+  
+  #app {
+    padding: 1rem 0.8rem;
+  }
+  
+  #respuesta {
+    min-height: 80px;
+  }
+  
+  #detalles, #sol-info {
+    font-size: 0.75rem;
+    gap: 8px;
+  }
+  
+  #barrio-options button {
+    font-size: 1.3rem;
+    padding: 5px 8px;
+  }
+  
+  #horas-lluvia {
+    width: calc(100% - 6px);
+    gap: 5px;
+  }
+  
+  .alerta-paraguas {
+    width: calc(100% - 10px);
+    padding: 0.6rem 0.7rem;
+  }
 }
