@@ -188,11 +188,32 @@ function obtenerClima() {
         return; // Salir si falta un elemento crítico
     }
 
+    function formatearHora(fechaStr) {
+        try {
+          // Si es un timestamp numérico, usarlo directamente
+          const fecha = typeof fechaStr === 'number' ? new Date(fechaStr) : 
+                       // Si parece una fecha ISO, intentar ajustarla
+                       fechaStr.includes('T') ? new Date(fechaStr.replace(/-/g, '/').replace('T', ' ')) :
+                       // De lo contrario, crear fecha actual
+                       new Date();
+          
+          // Usar método más básico y compatible
+          const horas = fecha.getHours().toString().padStart(2, '0');
+          const minutos = fecha.getMinutes().toString().padStart(2, '0');
+          return `${horas}:${minutos}`;
+        } catch (error) {
+          console.error("Error al formatear hora:", error);
+          // Fallback a hora actual si hay error
+          const ahora = new Date();
+          return `${ahora.getHours().toString().padStart(2, '0')}:${ahora.getMinutes().toString().padStart(2, '0')}`;
+        }
+      }
+
 
     // Modo simulado
     if (appState.mockClima && appState.datosSimulados[appState.mockClima]) {
         const climaSimulado = { ...appState.datosSimulados[appState.mockClima] };
-        climaSimulado.updatedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        climaSimulado.updatedAt = formatearHora(Date.now());
         if (climaSimulado.isDay === undefined) {
             const h = new Date().getHours();
             climaSimulado.isDay = h > 6 && h < 20;
@@ -259,7 +280,7 @@ function obtenerClima() {
           feelsLike: current.FeelsLikeC,
           humidity: current.humidity,
           chanceofrain: weather.hourly.slice(0, 5).map(h => h.chanceofrain || "0"),
-          updatedAt: new Date(current.localObsDateTime || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          updatedAt: formatearHora(current.localObsDateTime || Date.now()),
           sunrise: convertirA24h(astronomy?.sunrise || "--:--"),
           sunset: convertirA24h(astronomy?.sunset || "--:--"),
           weatherCode: weatherCode,
@@ -314,6 +335,7 @@ function actualizarUI(clima) { // Recibe el objeto clima completo
     appState.dom.sensacion.textContent = `Sensación: ${feelsLike}°C`;
 
     actualizarHorasLluvia(clima.chanceofrain);
+
 
     appState.dom.infoClima.textContent = `Actualizado: ${updatedAt}`;
     appState.dom.salidaSol.textContent = `☀️ ${sunrise}`;
