@@ -190,24 +190,41 @@ function obtenerClima() {
 
     function formatearHora(fechaStr) {
         try {
-          // Si es un timestamp numérico, usarlo directamente
-          const fecha = typeof fechaStr === 'number' ? new Date(fechaStr) : 
-                       // Si parece una fecha ISO, intentar ajustarla
-                       fechaStr.includes('T') ? new Date(fechaStr.replace(/-/g, '/').replace('T', ' ')) :
-                       // De lo contrario, crear fecha actual
-                       new Date();
-          
-          // Usar método más básico y compatible
-          const horas = fecha.getHours().toString().padStart(2, '0');
-          const minutos = fecha.getMinutes().toString().padStart(2, '0');
-          return `${horas}:${minutos}`;
+            let fecha;
+    
+            // Si es un timestamp numérico, usarlo directamente
+            if (typeof fechaStr === 'number') {
+                fecha = new Date(fechaStr);
+            } else if (typeof fechaStr === 'string' && fechaStr.includes('T')) {
+                // Si parece una fecha ISO, ajustar para compatibilidad con Safari
+                fecha = new Date(fechaStr.replace(/-/g, '/').replace('T', ' ').split('.')[0]);
+            } else if (typeof fechaStr === 'string') {
+                // Intentar crear una fecha directamente desde el string
+                fecha = new Date(fechaStr);
+            } else {
+                // Si no es un formato reconocido, usar la fecha actual
+                fecha = new Date();
+            }
+    
+            // Validar que la fecha es válida
+            if (isNaN(fecha.getTime())) {
+                console.error("Fecha inválida:", fechaStr);
+                fecha = new Date(); // Fallback a la fecha actual
+            }
+    
+            // Formatear la hora y los minutos
+            const horas = fecha.getHours().toString().padStart(2, '0');
+            const minutos = fecha.getMinutes().toString().padStart(2, '0');
+            return `${horas}:${minutos}`;
         } catch (error) {
-          console.error("Error al formatear hora:", error);
-          // Fallback a hora actual si hay error
-          const ahora = new Date();
-          return `${ahora.getHours().toString().padStart(2, '0')}:${ahora.getMinutes().toString().padStart(2, '0')}`;
+            console.error("Error al formatear hora:", error);
+            // Fallback a la hora actual si ocurre un error
+            const ahora = new Date();
+            const horas = ahora.getHours().toString().padStart(2, '0');
+            const minutos = ahora.getMinutes().toString().padStart(2, '0');
+            return `${horas}:${minutos}`;
         }
-      }
+    }
 
 
     // Modo simulado
