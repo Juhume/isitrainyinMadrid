@@ -134,6 +134,37 @@ canvas#rain {
   line-height: 1.4;
 }
 
+/* Estilos de título según clima */
+#logo.climate-sun {
+  background: linear-gradient(to right, #f59e0b, #fbbf24);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+#logo.climate-rain {
+  background: linear-gradient(to right, #60a5fa, #3b82f6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+#logo.climate-snow {
+  color: #334155;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  background: linear-gradient(to right, #1e293b, #334155);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+#logo.climate-night {
+  background: linear-gradient(to right, #818cf8, #4f46e5);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 /* Línea decorativa bajo el título */
 #logo::after {
   content: '';
