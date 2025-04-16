@@ -8,7 +8,8 @@ const appState = {
     lastShake: 0,
     activeAnimationIds: {
         particles: null,
-        rain: null // <--- ID CORREGIDO
+        rain: null,
+        weather: null // <--- ID CORREGIDO
     },
     lightningIntervalId: null,
     activeEffectScript: null,
@@ -391,6 +392,7 @@ function cacheDomElements() {
     appState.dom.alertaParaguas = document.getElementById("alerta-paraguas");
     appState.dom.particlesCanvas = document.getElementById("particles-canvas");
     appState.dom.rainCanvas = document.getElementById("rain");
+    appState.dom.weatherCanvas = document.getElementById("weather-canvas"); // Añadir esta línea
     appState.dom.body = document.body;
     console.log("cacheDomElements terminado."); // Log final
 }
@@ -768,26 +770,38 @@ function aplicarEstilosClima(clima) {
 
 // Gestiona la limpieza y carga de scripts de efectos
 function gestionarCanvasEfecto(targetCanvasId, scriptSrc) {
-    // Corregido para usar los IDs correctos de appState.dom
-    ['particles', 'rain'].forEach(type => {
-        // El ID del canvas en HTML es el 'type' ('particles' o 'rain')
-        // La referencia en appState.dom es `appState.dom[type + 'Canvas']`
-        const canvas = appState.dom[`${type}Canvas`];
-        // El ID de animación se guarda bajo la clave 'type' ('particles' o 'rain')
-        const animId = appState.activeAnimationIds[type];
+    console.log(`Iniciando efecto con canvas=${targetCanvasId}, script=${scriptSrc}`); // Añade este log
+
+    // Limpiar todos los canvas y animaciones
+    ['particles', 'rain', 'weather-canvas'].forEach(type => {
+        // Necesitamos normalizar los IDs de referencia
+        let canvasKey, animKey;
+        
+        if (type === 'weather-canvas') {
+            canvasKey = 'weatherCanvas';
+            animKey = 'weather';
+        } else {
+            canvasKey = `${type}Canvas`;
+            animKey = type;
+        }
+        
+        const canvas = appState.dom[canvasKey];
+        const animId = appState.activeAnimationIds[animKey];
+        
         if (canvas) {
             canvas.style.opacity = "0";
             canvas.style.display = "none";
             canvas.dataset.active = "false";
             if (animId) {
+                console.log(`Cancelando animación para ${type}, ID=${animId}`);
                 cancelAnimationFrame(animId);
-                appState.activeAnimationIds[type] = null;
+                appState.activeAnimationIds[animKey] = null;
             }
         }
     });
 
     if (appState.lightningIntervalId) {
-        console.log(`gestionarCanvasEfecto: Limpiando intervalo de rayos (ID=${appState.lightningIntervalId})`);
+        console.log(`Limpiando intervalo de rayos (ID=${appState.lightningIntervalId})`);
         clearInterval(appState.lightningIntervalId);
         appState.lightningIntervalId = null;
     }
@@ -797,25 +811,30 @@ function gestionarCanvasEfecto(targetCanvasId, scriptSrc) {
         appState.activeEffectScript = null;
     }
 
-    if (!scriptSrc || !targetCanvasId) { // targetCanvasId es 'particles' o 'rain'
-      console.log("No hay script de efecto para cargar o targetCanvasId no especificado.");
-      return;
+    if (!scriptSrc || !targetCanvasId) {
+        console.log("No hay script de efecto para cargar o targetCanvasId no especificado.");
+        return;
     }
 
-    // Obtener la referencia correcta al elemento canvas
-    const targetCanvas = appState.dom[`${targetCanvasId}Canvas`]; // Usa el ID para buscar en appState.dom
+    // ¡ESTA ES LA PARTE CLAVE QUE NECESITA CORRECCIÓN!
+    // Normaliza las referencias para obtener el canvas correcto
+    let targetCanvasKey;
+    if (targetCanvasId === 'weather-canvas') {
+        targetCanvasKey = 'weatherCanvas';
+    } else {
+        targetCanvasKey = `${targetCanvasId}Canvas`;
+    }
+    
+    const targetCanvas = appState.dom[targetCanvasKey];
+    
+    console.log(`Buscando canvas con clave: ${targetCanvasKey}`);
+    
     if (!targetCanvas) {
         console.error(`Canvas con ID ${targetCanvasId} no encontrado en appState.dom.`);
-        // Podríamos intentar buscarlo por ID directamente como fallback
-        // const fallbackCanvas = document.getElementById(targetCanvasId);
-        // if (!fallbackCanvas) {
-        //     console.error(`Fallback getElementById(${targetCanvasId}) también falló.`);
-        //     return;
-        // }
-        // targetCanvas = fallbackCanvas;
-        return; // Salir si no se encuentra el canvas
+        return;
     }
 
+    // El resto de la función sigue igual
     const script = document.createElement("script");
     script.src = scriptSrc;
     script.async = true;
@@ -934,7 +953,7 @@ function actualizarTitulo() {
     if (appState.barrio === "cuchillo") {
         titulo = "¿Llueve en el barrio navajero?"; 
     } else if (appState.barrio === "elfo") {
-        titulo = "¿Llueve en barrio elfo?"; 
+        titulo = "¿Llueve en el barrio elfo?"; 
     }
     
     if(appState.dom.logo) {
