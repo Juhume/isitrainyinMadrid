@@ -157,8 +157,12 @@ canvas#rain {
   justify-content: center;
 }
 #respuesta .emoji {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70px;
+  margin-bottom: 10px;
   font-size: 3.5rem; /* Ligeramente más pequeño */
-  margin-bottom: 0.75rem;
   line-height: 1;
 }
 #respuesta .temp {
@@ -197,6 +201,21 @@ canvas#rain {
   font-size: 0.85rem; 
 }
 
+#sol-info .wi {
+  font-size: 1.3em;
+  margin-right: 5px;
+  vertical-align: middle;
+  color: var(--text-color-primary);
+}
+
+.wi-sunrise {
+  color: #f59e0b; /* Tono anaranjado para amanecer */
+}
+
+.wi-sunset {
+  color: #ef4444; /* Tono rojizo para atardecer */
+}
+
 #info-clima {
   position: absolute;
   bottom: 15px;
@@ -220,6 +239,33 @@ canvas#rain {
   position: relative;
   padding-bottom: 40px;
 }
+
+/* Estilos para los Weather Icons */
+.wi {
+  font-size: 1.3em; /* Tamaño general para los iconos */
+  line-height: 1;
+  vertical-align: middle;
+}
+
+#respuesta .emoji .wi {
+  font-size: 3rem !important; /* Añadido !important para asegurar prioridad */
+  line-height: 1;
+  display: inline-block; /* Asegura que el icono se muestre correctamente */
+}
+
+.hora-icono .wi {
+  font-size: 1.8rem !important; /* Tamaño para los iconos de previsión */
+}
+
+#sol-info .wi {
+  margin-right: 5px;
+}
+
+.alerta-paraguas .wi {
+  font-size: 1.2em;
+  margin-right: 5px;
+}
+
 @media (max-width: 480px) {
   #prevision {
     padding-bottom: 35px;
@@ -335,9 +381,12 @@ canvas#rain {
 
 /* Mejora del tamaño del icono */
 .hora-icono {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  margin: 4px 0;
   font-size: 1.8rem !important;
-  margin: 4px 0 !important;
-  line-height: 1;
 }
 
 /* Mejora del valor de la hora */
@@ -553,6 +602,11 @@ canvas#rain {
   100% { background-position: 0% 50%; }
 }
 
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
 /* ----------------------------------- */
 /* RESPONSIVE MEJORADO */
 /* ----------------------------------- */
@@ -606,7 +660,7 @@ canvas#rain {
     right: auto;
     transform: translateX(-50%) translateY(15px);
     }
-    
+
   #barrio-menu.visible, #mock-menu.visible {
     transform: translateX(-50%) translateY(0);
   }
@@ -700,7 +754,7 @@ canvas#rain {
     justify-content: flex-start;
     align-items: center;
     padding: 15px 12px 100px;
-    padding-top: 50px;
+    padding-top: 60px;
     color: var(--text-color-primary);
     box-sizing: border-box;
   }
@@ -847,4 +901,26 @@ canvas#rain {
     width: calc(100% - 10px);
     padding: 0.6rem 0.7rem;
   }
+}
+
+/* Estilos para los iconos SVG del clima */
+.weather-icon {
+  width: 64px;
+  height: 64px;
+  display: inline-block;
+  animation: floatIcon 3s ease-in-out infinite;
+}
+
+.weather-icon-small {
+  width: 22px;
+  height: 22px;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.weather-icon-hour {
+  width: 40px;
+  height: 40px;
+  display: block;
+  margin: 0 auto;
 }

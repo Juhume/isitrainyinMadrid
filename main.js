@@ -48,54 +48,320 @@ const appState = {
 };
 
 // Mapeo de WeatherCode
+// Mapeo de WeatherCode con SVGs
 const weatherCodeMap = {
-    '113': { emoji: '☀️', clase: 'fondo-sun', script: 'particles.js', canvas: 'particles', isDaySensitive: true, nightEmoji: '🌙', nightClase: 'fondo-clear-night' },
-    '116': { emoji: '🌤️', clase: 'fondo-clouds', script: 'clouds.js', canvas: 'particles' },
-    '119': { emoji: '☁️', clase: 'fondo-clouds', script: 'clouds.js', canvas: 'particles' },
-    '122': { emoji: '🌥️', clase: 'fondo-clouds', script: 'clouds.js', canvas: 'particles' },
-    '143': { emoji: '🌫️', clase: 'fondo-fog', script: 'fog.js', canvas: 'particles' },
-    '248': { emoji: '🌫️', clase: 'fondo-fog', script: 'fog.js', canvas: 'particles' },
-    '260': { emoji: '🌫️', clase: 'fondo-fog', script: 'fog.js', canvas: 'particles' },
-    '120': { emoji: '🌫️', clase: 'fondo-fog', script: 'fog.js', canvas: 'particles' },
-    '176': { emoji: '🌦️', clase: 'fondo-rain', script: 'rain.js', canvas: 'rain' }, // Usa canvas 'rain'
-    '263': { emoji: '🌦️', clase: 'fondo-rain', script: 'rain.js', canvas: 'rain' },
-    '266': { emoji: '🌧️', clase: 'fondo-rain', script: 'rain.js', canvas: 'rain' },
-    '281': { emoji: '🌧️', clase: 'fondo-rain', script: 'rain.js', canvas: 'rain' },
-    '293': { emoji: '🌧️', clase: 'fondo-rain', script: 'rain.js', canvas: 'rain' },
-    '296': { emoji: '🌧️', clase: 'fondo-rain', script: 'rain.js', canvas: 'rain' },
-    '353': { emoji: '🌦️', clase: 'fondo-rain', script: 'rain.js', canvas: 'rain' },
-    '185': { emoji: '🌧️', clase: 'fondo-rain', script: 'rain.js', canvas: 'rain' },
-    '299': { emoji: '🌧️', clase: 'fondo-rain', script: 'rain.js', canvas: 'rain' },
-    '302': { emoji: '🌧️', clase: 'fondo-rain', script: 'rain.js', canvas: 'rain' },
-    '305': { emoji: '🌧️', clase: 'fondo-rain', script: 'rain.js', canvas: 'rain' },
-    '308': { emoji: '🌧️', clase: 'fondo-rain', script: 'rain.js', canvas: 'rain' },
-    '311': { emoji: '🌧️', clase: 'fondo-rain', script: 'rain.js', canvas: 'rain' },
-    '314': { emoji: '🌧️', clase: 'fondo-rain', script: 'rain.js', canvas: 'rain' },
-    '356': { emoji: '🌧️', clase: 'fondo-rain', script: 'rain.js', canvas: 'rain' },
-    '359': { emoji: '🌧️', clase: 'fondo-rain', script: 'rain.js', canvas: 'rain' },
-    '179': { emoji: '🌨️', clase: 'fondo-snow', script: 'snow.js', canvas: 'particles' },
-    '182': { emoji: '🌨️', clase: 'fondo-snow', script: 'snow.js', canvas: 'particles' },
-    '227': { emoji: '🌬️❄️', clase: 'fondo-snow', script: 'snow.js', canvas: 'particles' },
-    '230': { emoji: '🌬️❄️', clase: 'fondo-snow', script: 'snow.js', canvas: 'particles' },
-    '317': { emoji: '🌨️', clase: 'fondo-snow', script: 'snow.js', canvas: 'particles' },
-    '320': { emoji: '🌨️', clase: 'fondo-snow', script: 'snow.js', canvas: 'particles' },
-    '323': { emoji: '❄️', clase: 'fondo-snow', script: 'snow.js', canvas: 'particles' },
-    '326': { emoji: '❄️', clase: 'fondo-snow', script: 'snow.js', canvas: 'particles' },
-    '329': { emoji: '❄️', clase: 'fondo-snow', script: 'snow.js', canvas: 'particles' },
-    '332': { emoji: '❄️', clase: 'fondo-snow', script: 'snow.js', canvas: 'particles' },
-    '335': { emoji: '❄️', clase: 'fondo-snow', script: 'snow.js', canvas: 'particles' },
-    '338': { emoji: '❄️', clase: 'fondo-snow', script: 'snow.js', canvas: 'particles' },
-    '350': { emoji: '🧊', clase: 'fondo-snow', script: 'snow.js', canvas: 'particles' },
-    '368': { emoji: '🌨️', clase: 'fondo-snow', script: 'snow.js', canvas: 'particles' },
-    '371': { emoji: '🌨️', clase: 'fondo-snow', script: 'snow.js', canvas: 'particles' },
-    '374': { emoji: '🧊', clase: 'fondo-snow', script: 'snow.js', canvas: 'particles' },
-    '377': { emoji: '🧊', clase: 'fondo-snow', script: 'snow.js', canvas: 'particles' },
-    '200': { emoji: '⛈️', clase: 'fondo-storm', script: 'storm.js', canvas: 'rain' }, // Usa canvas 'rain'
-    '386': { emoji: '⛈️', clase: 'fondo-storm', script: 'storm.js', canvas: 'rain' },
-    '389': { emoji: '⛈️', clase: 'fondo-storm', script: 'storm.js', canvas: 'rain' },
-    '392': { emoji: '⛈️❄️', clase: 'fondo-storm', script: 'storm.js', canvas: 'rain' },
-    '395': { emoji: '⛈️❄️', clase: 'fondo-storm', script: 'storm.js', canvas: 'rain' },
-    'default': { emoji: '☁️', clase: 'fondo-clouds', script: 'clouds.js', canvas: 'particles' }
+    // Códigos para sol/despejado
+    '113': { 
+        emoji: '<img src="weather-icons/line/clear-day.svg" alt="Soleado" class="weather-icon">', 
+        clase: 'fondo-sun', 
+        script: 'particles.js', 
+        canvas: 'particles', 
+        isDaySensitive: true, 
+        nightEmoji: '<img src="weather-icons/line/clear-night.svg" alt="Despejado noche" class="weather-icon">', 
+        nightClase: 'fondo-clear-night' 
+    },
+    
+    // Códigos para nubes
+    '116': { 
+        emoji: '<img src="weather-icons/line/partly-cloudy-day.svg" alt="Parcialmente nublado" class="weather-icon">', 
+        clase: 'fondo-clouds', 
+        script: 'clouds.js', 
+        canvas: 'particles',
+        isDaySensitive: true,
+        nightEmoji: '<img src="weather-icons/line/partly-cloudy-night.svg" alt="Parcialmente nublado noche" class="weather-icon">',
+    },
+    '119': { 
+        emoji: '<img src="weather-icons/line/cloudy.svg" alt="Nublado" class="weather-icon">', 
+        clase: 'fondo-clouds', 
+        script: 'clouds.js', 
+        canvas: 'particles' 
+    },
+    '122': { 
+        emoji: '<img src="weather-icons/line/cloudy.svg" alt="Muy nublado" class="weather-icon">', 
+        clase: 'fondo-clouds', 
+        script: 'clouds.js', 
+        canvas: 'particles' 
+    },
+    
+    // Códigos para niebla/bruma
+    '143': { 
+        emoji: '<img src="weather-icons/line/fog.svg" alt="Niebla" class="weather-icon">', 
+        clase: 'fondo-fog', 
+        script: 'fog.js', 
+        canvas: 'particles' 
+    },
+    '248': { 
+        emoji: '<img src="weather-icons/line/fog.svg" alt="Niebla" class="weather-icon">', 
+        clase: 'fondo-fog', 
+        script: 'fog.js', 
+        canvas: 'particles' 
+    },
+    '260': { 
+        emoji: '<img src="weather-icons/line/fog.svg" alt="Niebla" class="weather-icon">', 
+        clase: 'fondo-fog', 
+        script: 'fog.js', 
+        canvas: 'particles' 
+    },
+    '120': { 
+        emoji: '<img src="weather-icons/line/fog.svg" alt="Niebla" class="weather-icon">', 
+        clase: 'fondo-fog', 
+        script: 'fog.js', 
+        canvas: 'particles' 
+    },
+    
+    // Códigos para lluvia ligera/llovizna
+    '176': { 
+        emoji: '<img src="weather-icons/line/partly-cloudy-day-drizzle.svg" alt="Lluvia ligera" class="weather-icon">', 
+        clase: 'fondo-rain', 
+        script: 'rain.js', 
+        canvas: 'rain',
+        isDaySensitive: true,
+        nightEmoji: '<img src="weather-icons/line/partly-cloudy-night-drizzle.svg" alt="Lluvia ligera noche" class="weather-icon">'
+    },
+    '263': { 
+        emoji: '<img src="weather-icons/line/partly-cloudy-day-drizzle.svg" alt="Llovizna ligera" class="weather-icon">', 
+        clase: 'fondo-rain', 
+        script: 'rain.js', 
+        canvas: 'rain',
+        isDaySensitive: true,
+        nightEmoji: '<img src="weather-icons/line/partly-cloudy-night-drizzle.svg" alt="Llovizna ligera noche" class="weather-icon">'
+    },
+    '353': { 
+        emoji: '<img src="weather-icons/line/partly-cloudy-day-drizzle.svg" alt="Llovizna" class="weather-icon">', 
+        clase: 'fondo-rain', 
+        script: 'rain.js', 
+        canvas: 'rain',
+        isDaySensitive: true,
+        nightEmoji: '<img src="weather-icons/line/partly-cloudy-night-drizzle.svg" alt="Llovizna noche" class="weather-icon">'
+    },
+    
+    // Códigos para lluvia
+    '266': { 
+        emoji: '<img src="weather-icons/line/drizzle.svg" alt="Llovizna" class="weather-icon">', 
+        clase: 'fondo-rain', 
+        script: 'rain.js', 
+        canvas: 'rain' 
+    },
+    '281': { 
+        emoji: '<img src="weather-icons/line/rain.svg" alt="Lluvia helada" class="weather-icon">', 
+        clase: 'fondo-rain', 
+        script: 'rain.js', 
+        canvas: 'rain' 
+    },
+    '293': { 
+        emoji: '<img src="weather-icons/line/rain.svg" alt="Lluvia" class="weather-icon">', 
+        clase: 'fondo-rain', 
+        script: 'rain.js', 
+        canvas: 'rain' 
+    },
+    '296': { 
+        emoji: '<img src="weather-icons/line/rain.svg" alt="Lluvia" class="weather-icon">', 
+        clase: 'fondo-rain', 
+        script: 'rain.js', 
+        canvas: 'rain' 
+    },
+    '185': { 
+        emoji: '<img src="weather-icons/line/rain.svg" alt="Lluvia helada" class="weather-icon">', 
+        clase: 'fondo-rain', 
+        script: 'rain.js', 
+        canvas: 'rain' 
+    },
+    '299': { 
+        emoji: '<img src="weather-icons/line/rain.svg" alt="Lluvia" class="weather-icon">', 
+        clase: 'fondo-rain', 
+        script: 'rain.js', 
+        canvas: 'rain' 
+    },
+    '302': { 
+        emoji: '<img src="weather-icons/line/rain.svg" alt="Lluvia intensa" class="weather-icon">', 
+        clase: 'fondo-rain', 
+        script: 'rain.js', 
+        canvas: 'rain' 
+    },
+    '305': { 
+        emoji: '<img src="weather-icons/line/rain.svg" alt="Lluvia intensa" class="weather-icon">', 
+        clase: 'fondo-rain', 
+        script: 'rain.js', 
+        canvas: 'rain' 
+    },
+    '308': { 
+        emoji: '<img src="weather-icons/line/rain.svg" alt="Lluvia fuerte" class="weather-icon">', 
+        clase: 'fondo-rain', 
+        script: 'rain.js', 
+        canvas: 'rain' 
+    },
+    '311': { 
+        emoji: '<img src="weather-icons/line/rain.svg" alt="Lluvia helada" class="weather-icon">', 
+        clase: 'fondo-rain', 
+        script: 'rain.js', 
+        canvas: 'rain' 
+    },
+    '314': { 
+        emoji: '<img src="weather-icons/line/rain.svg" alt="Lluvia helada fuerte" class="weather-icon">', 
+        clase: 'fondo-rain', 
+        script: 'rain.js', 
+        canvas: 'rain' 
+    },
+    '356': { 
+        emoji: '<img src="weather-icons/line/rain.svg" alt="Lluvia moderada o fuerte" class="weather-icon">', 
+        clase: 'fondo-rain', 
+        script: 'rain.js', 
+        canvas: 'rain' 
+    },
+    '359': { 
+        emoji: '<img src="weather-icons/line/rain.svg" alt="Lluvia torrencial" class="weather-icon">', 
+        clase: 'fondo-rain', 
+        script: 'rain.js', 
+        canvas: 'rain' 
+    },
+    
+    // Códigos para nieve
+    '179': { 
+        emoji: '<img src="weather-icons/line/snow.svg" alt="Nieve" class="weather-icon">', 
+        clase: 'fondo-snow', 
+        script: 'snow.js', 
+        canvas: 'particles' 
+    },
+    '182': { 
+        emoji: '<img src="weather-icons/line/sleet.svg" alt="Aguanieve" class="weather-icon">', 
+        clase: 'fondo-snow', 
+        script: 'snow.js', 
+        canvas: 'particles' 
+    },
+    '227': { 
+        emoji: '<img src="weather-icons/line/wind-snow.svg" alt="Nieve con viento" class="weather-icon">', 
+        clase: 'fondo-snow', 
+        script: 'snow.js', 
+        canvas: 'particles' 
+    },
+    '230': { 
+        emoji: '<img src="weather-icons/line/wind-snow.svg" alt="Ventisca" class="weather-icon">', 
+        clase: 'fondo-snow', 
+        script: 'snow.js', 
+        canvas: 'particles' 
+    },
+    '317': { 
+        emoji: '<img src="weather-icons/line/sleet.svg" alt="Aguanieve" class="weather-icon">', 
+        clase: 'fondo-snow', 
+        script: 'snow.js', 
+        canvas: 'particles' 
+    },
+    '320': { 
+        emoji: '<img src="weather-icons/line/sleet.svg" alt="Aguanieve moderada/fuerte" class="weather-icon">', 
+        clase: 'fondo-snow', 
+        script: 'snow.js', 
+        canvas: 'particles' 
+    },
+    '323': { 
+        emoji: '<img src="weather-icons/line/snow.svg" alt="Nieve ligera" class="weather-icon">', 
+        clase: 'fondo-snow', 
+        script: 'snow.js', 
+        canvas: 'particles' 
+    },
+    '326': { 
+        emoji: '<img src="weather-icons/line/snow.svg" alt="Nieve ligera" class="weather-icon">', 
+        clase: 'fondo-snow', 
+        script: 'snow.js', 
+        canvas: 'particles' 
+    },
+    '329': { 
+        emoji: '<img src="weather-icons/line/snow.svg" alt="Nieve moderada" class="weather-icon">', 
+        clase: 'fondo-snow', 
+        script: 'snow.js', 
+        canvas: 'particles' 
+    },
+    '332': { 
+        emoji: '<img src="weather-icons/line/snow.svg" alt="Nieve moderada" class="weather-icon">', 
+        clase: 'fondo-snow', 
+        script: 'snow.js', 
+        canvas: 'particles' 
+    },
+    '335': { 
+        emoji: '<img src="weather-icons/line/snow.svg" alt="Nieve fuerte" class="weather-icon">', 
+        clase: 'fondo-snow', 
+        script: 'snow.js', 
+        canvas: 'particles' 
+    },
+    '338': { 
+        emoji: '<img src="weather-icons/line/snow.svg" alt="Nieve fuerte" class="weather-icon">', 
+        clase: 'fondo-snow', 
+        script: 'snow.js', 
+        canvas: 'particles' 
+    },
+    '368': { 
+        emoji: '<img src="weather-icons/line/snow.svg" alt="Nieve ligera" class="weather-icon">', 
+        clase: 'fondo-snow', 
+        script: 'snow.js', 
+        canvas: 'particles' 
+    },
+    '371': { 
+        emoji: '<img src="weather-icons/line/snow.svg" alt="Nieve fuerte" class="weather-icon">', 
+        clase: 'fondo-snow', 
+        script: 'snow.js', 
+        canvas: 'particles' 
+    },
+    
+    // Códigos para granizo
+    '350': { 
+        emoji: '<img src="weather-icons/line/hail.svg" alt="Granizo" class="weather-icon">', 
+        clase: 'fondo-snow', 
+        script: 'snow.js', 
+        canvas: 'particles' 
+    },
+    '374': { 
+        emoji: '<img src="weather-icons/line/hail.svg" alt="Granizo ligero" class="weather-icon">', 
+        clase: 'fondo-snow', 
+        script: 'snow.js', 
+        canvas: 'particles' 
+    },
+    '377': { 
+        emoji: '<img src="weather-icons/line/hail.svg" alt="Granizo fuerte" class="weather-icon">', 
+        clase: 'fondo-snow', 
+        script: 'snow.js', 
+        canvas: 'particles' 
+    },
+    
+    // Códigos para tormentas
+    '200': { 
+        emoji: '<img src="weather-icons/line/thunderstorms.svg" alt="Tormenta" class="weather-icon">', 
+        clase: 'fondo-storm', 
+        script: 'storm.js', 
+        canvas: 'weather-canvas' 
+    },
+    '386': { 
+        emoji: '<img src="weather-icons/line/thunderstorms.svg" alt="Tormenta" class="weather-icon">', 
+        clase: 'fondo-storm', 
+        script: 'storm.js', 
+        canvas: 'weather-canvas' 
+    },
+    '389': { 
+        emoji: '<img src="weather-icons/line/thunderstorms-rain.svg" alt="Tormenta con lluvia" class="weather-icon">', 
+        clase: 'fondo-storm', 
+        script: 'storm.js', 
+        canvas: 'weather-canvas' 
+    },
+    
+    // Códigos para tormentas con nieve
+    '392': { 
+        emoji: '<img src="weather-icons/line/thunderstorms-snow.svg" alt="Tormenta con nieve" class="weather-icon">', 
+        clase: 'fondo-storm', 
+        script: 'storm.js', 
+        canvas: 'weather-canvas' 
+    },
+    '395': { 
+        emoji: '<img src="weather-icons/line/thunderstorms-snow.svg" alt="Tormenta con nieve fuerte" class="weather-icon">', 
+        clase: 'fondo-storm', 
+        script: 'storm.js', 
+        canvas: 'weather-canvas' 
+    },
+    
+    // Valor por defecto
+    'default': { 
+        emoji: '<img src="weather-icons/line/cloudy.svg" alt="Nublado" class="weather-icon">', 
+        clase: 'fondo-clouds', 
+        script: 'clouds.js', 
+        canvas: 'particles' 
+    }
 };
 
 // --- INICIALIZACIÓN ---
@@ -327,18 +593,18 @@ function obtenerClima() {
 
 // --- ACTUALIZACIÓN DE LA INTERFAZ (UI) ---
 
-function actualizarUI(clima) { // Recibe el objeto clima completo
-    // Comprobaciones de seguridad por si algún elemento del DOM es null
+function actualizarUI(clima) {
+    // Comprobaciones de seguridad
     if (!appState.dom.respuesta || !appState.dom.humedad || !appState.dom.sensacion ||
         !appState.dom.horasLluvia || !appState.dom.infoClima || !appState.dom.salidaSol ||
         !appState.dom.puestaSol) {
-        console.error("Error Crítico: Falta uno o más elementos del DOM en actualizarUI. Revisa cacheDomElements y el HTML.");
-        return; // No continuar si faltan elementos esenciales
+        console.error("Error Crítico: Falta uno o más elementos del DOM en actualizarUI.");
+        return;
     }
 
     const { desc, temp, feelsLike, humidity, chanceofrain, updatedAt, sunrise, sunset, weatherCode, isDay } = clima;
     const { emoji } = getWeatherInfoFromCode(weatherCode, desc, isDay);
-    const esMalTiempo = emoji === '🌧️' || emoji === '⛈️' || emoji === '❄️' || emoji === '🌨️' || /rain|thunder|snow|lluvia|tormenta|nieve/i.test(desc);
+    const esMalTiempo = /rain|thunder|snow|lluvia|tormenta|nieve/i.test(desc);
 
     const mensaje = esMalTiempo
         ? `Sí, ${desc.toLowerCase()}.`
@@ -353,20 +619,19 @@ function actualizarUI(clima) { // Recibe el objeto clima completo
 
     actualizarHorasLluvia(clima.chanceofrain);
 
-
     appState.dom.infoClima.textContent = `Actualizado: ${updatedAt}`;
-    appState.dom.salidaSol.textContent = `☀️ ${sunrise}`;
-    appState.dom.puestaSol.textContent = `🌙 ${sunset}`;
-
+    appState.dom.salidaSol.innerHTML = `<i class="wi wi-sunrise"></i> ${sunrise}`;
+    appState.dom.puestaSol.innerHTML = `<i class="wi wi-sunset"></i> ${sunset}`;
+    
     const alerta = appState.dom.alertaParaguas || document.getElementById("alerta-paraguas");
     const hayLluviaAlta = clima.chanceofrain.some(prob => parseInt(prob, 10) >= 50);
   
     if (hayLluviaAlta) {
-      alerta.textContent = "☔ Parece que va a llover pronto. ¡Lleva paraguas!";
-      alerta.style.display = "block";
+        alerta.innerHTML = `<img src="weather-icons/line/umbrella.svg" alt="Paraguas" class="weather-icon-small"> Parece que va a llover pronto. ¡Lleva paraguas!`;
+        alerta.style.display = "block";
     } else {
-      alerta.style.display = "none";
-    }    
+        alerta.style.display = "none";
+    }  
 }
 
 // Visualización mejorada de previsión por horas
@@ -375,10 +640,6 @@ function actualizarHorasLluvia(chanceofrain) {
     
     const horaActual = new Date();
     const diaActual = horaActual.getDate();
-    
-    // Contenedor principal con layout flex
-    const contenedor = document.createElement('div');
-    contenedor.className = 'prevision-contenedor';
     
     // Procesar cada previsión de lluvia
     const previsionesHTML = chanceofrain.map((val, i) => {
@@ -398,16 +659,16 @@ function actualizarHorasLluvia(chanceofrain) {
         // Calcular probabilidad de lluvia
         const probabilidad = parseInt(val, 10);
         
-        // Determinar estilo según probabilidad
-        let icono, clase;
+        // Determinar estilo e icono según probabilidad
+        let iconoSrc, clase;
         if (probabilidad >= 70) {
-            icono = '🌧️';
+            iconoSrc = "weather-icons/line/rain.svg";
             clase = 'prob-alta';
         } else if (probabilidad >= 30) {
-            icono = '🌦️';
+            iconoSrc = "weather-icons/line/partly-cloudy-day-drizzle.svg";
             clase = 'prob-media';
         } else {
-            icono = '☀️';
+            iconoSrc = "weather-icons/line/clear-day.svg";
             clase = 'prob-baja';
         }
         
@@ -415,7 +676,9 @@ function actualizarHorasLluvia(chanceofrain) {
         return `
             <div class="hora-prevision ${clase}">
                 <div class="hora-valor">${textoHora}</div>
-                <div class="hora-icono">${icono}</div>
+                <div class="hora-icono">
+                    <img src="${iconoSrc}" alt="Previsión" class="weather-icon-hour">
+                </div>
                 <div class="porcentaje">${val}%</div>
             </div>
         `;
@@ -566,15 +829,46 @@ function crearMenuBarrio() {
         button.dataset.barrio = key;
         button.textContent = key === 'cuchillo' ? '🔪' : (key === 'elfo' ? '🧝' : key);
         button.setAttribute("aria-label", `Consultar clima para Barrio ${key.charAt(0).toUpperCase() + key.slice(1)}`);
-        button.addEventListener("click", () => { if (appState.barrio !== key) { appState.barrio = key; transicionBarrio(); obtenerClima(); } toggleMenuBarrio(false); });
+        button.addEventListener("click", () => { 
+            if (appState.barrio !== key) {
+                // NUEVO: Desactivar clima simulado al cambiar de barrio
+                if (appState.mockClima) {
+                    appState.mockClima = "";
+                    // Resetear el select visual
+                    if (appState.dom.mockSelect) {
+                        appState.dom.mockSelect.value = "";
+                    }
+                }
+                appState.barrio = key;
+                transicionBarrio();
+                obtenerClima();
+            }
+            toggleMenuBarrio(false);
+        });
         optionsContainer.appendChild(button);
     });
-     const madridButton = document.createElement("button");
-     madridButton.dataset.barrio = "";
-     madridButton.textContent = "🧸";
-     madridButton.setAttribute("aria-label", "Consultar clima para Madrid centro");
-     madridButton.addEventListener("click", () => { if (appState.barrio !== "") { appState.barrio = ""; transicionBarrio(); obtenerClima(); } toggleMenuBarrio(false); });
-     optionsContainer.appendChild(madridButton);
+    
+    const madridButton = document.createElement("button");
+    madridButton.dataset.barrio = "";
+    madridButton.textContent = "🧸";
+    madridButton.setAttribute("aria-label", "Consultar clima para Madrid centro");
+    madridButton.addEventListener("click", () => {
+        if (appState.barrio !== "") {
+            // NUEVO: Desactivar clima simulado también para Madrid centro
+            if (appState.mockClima) {
+                appState.mockClima = "";
+                // Resetear el select visual
+                if (appState.dom.mockSelect) {
+                    appState.dom.mockSelect.value = "";
+                }
+            }
+            appState.barrio = "";
+            transicionBarrio();
+            obtenerClima();
+        }
+        toggleMenuBarrio(false);
+    });
+    optionsContainer.appendChild(madridButton);
 }
 
 function toggleMenuBarrio(forceState = null) { 
@@ -588,7 +882,12 @@ function toggleMenuMock() {
     const menu = appState.dom.mockMenu; 
     appState.menuMockVisible = !appState.menuMockVisible; 
     menu.classList.toggle("visible", appState.menuMockVisible); 
-    menu.style.display = appState.menuMockVisible ? "block" : "none"; 
+    menu.style.display = appState.menuMockVisible ? "block" : "none";
+    
+    // NUEVO: Si cerramos el menú y no hay clima simulado seleccionado, actualizar
+    if (!appState.menuMockVisible && !appState.mockClima) {
+        obtenerClima(); // Obtener clima real actualizado
+    }
 }
 
 function handleShake(e) { 
