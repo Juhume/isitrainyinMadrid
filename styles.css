@@ -339,7 +339,25 @@ canvas#rain {
   .hora-prevision {
     flex: 0 0 calc(20% - 10px);
     max-width: calc(20% - 10px);
-    height: 105px;
+    height: auto;          /* Cambiar de altura fija a auto */
+    min-height: 120px;     /* Aumentar altura mínima */
+    padding: 12px 6px;     /* Ajustar padding */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  /* Ajustar tamaño de icono para pantallas grandes */
+  .weather-icon-hour {
+    width: 48px;
+    height: 48px;
+    margin: 6px auto;
+  }
+  
+  /* Ajustar margen superior del porcentaje */
+  .porcentaje {
+    margin-top: 8px;
+    padding: 3px 8px;
   }
 }
 
@@ -381,19 +399,19 @@ canvas#rain {
 
 /* Mejora del tamaño del icono */
 .hora-icono {
+  height: auto !important;  /* Anular altura fija */
+  min-height: 35px;         /* Establecer altura mínima */
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 40px;
   margin: 4px 0;
-  font-size: 1.8rem !important;
 }
 
 /* Mejora del valor de la hora */
 .hora-valor {
   font-size: 0.9rem;
   font-weight: 500;
-  margin-bottom: 5px;
+  margin-bottom: 3px; /* Reducido de 5px a 3px */
   text-align: center;
   line-height: 1.3;
 }
@@ -406,17 +424,21 @@ canvas#rain {
   font-weight: 300;
 }
 
-/* Porcentaje */
+/* Porcentaje - Ajustes para evitar solapamiento */
 .porcentaje {
   position: static;
-  font-size: 0.85rem;
-  font-weight: 600;
+  margin-top: 6px;
   padding: 2px 6px;
+  text-align: center;
+  display: block;          /* Cambiar a block para mayor claridad */
+  width: fit-content;      /* Ajustar ancho al contenido */
+  margin-left: auto;       /* Centrar horizontalmente */
+  margin-right: auto;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  font-weight: 600;
   border-radius: 6px;
-  margin-top: 8px;
-  line-height: 1;
   white-space: nowrap;
-  display: inline-block;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -449,7 +471,23 @@ canvas#rain {
   .hora-prevision {
     flex: 0 0 calc(20% - 10px);
     max-width: calc(20% - 10px);
-    height: 105px;
+    height: auto; /* Cambiar altura fija a auto */
+    min-height: 120px; /* Aumentar altura mínima */
+    padding: 12px 6px; /* Ajustar padding */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .weather-icon-hour {
+    width: 48px;
+    height: 48px;
+    margin: 6px auto;
+  }
+  
+  .porcentaje {
+    margin-top: 8px;
+    padding: 3px 8px;
   }
 }
 
@@ -457,7 +495,12 @@ canvas#rain {
 @media (max-width: 600px) {
   /* Todos los elementos: ajustes básicos */
   .hora-prevision {
-    height: 100px;
+    padding: 12px 4px; /* Reducido de 15px 6px a 12px 4px */
+    height: auto; /* Cambiar altura fija a auto */
+    min-height: 95px; /* Establecer altura mínima */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
   
   /* Primeros 3 elementos - ocupan 1/3 cada uno (primera fila) */
@@ -479,7 +522,20 @@ canvas#rain {
   }
   
   .hora-icono {
+    height: 35px; /* Reducido de 40px a 35px */
+    margin: 2px 0; /* Reducido de 4px a 2px */
     font-size: 1.6rem !important;
+  }
+  
+  .weather-icon-hour {
+    width: 35px; /* Reducido de 40px a 35px */
+    height: 35px;
+  }
+  
+  /* Ajustar tamaño del texto de porcentaje en pantallas pequeñas */
+  .porcentaje {
+    font-size: 0.8rem;
+    padding: 2px 4px;
   }
 }
 
@@ -502,6 +558,29 @@ canvas#rain {
     width: calc(100% - 16px);
     margin: 8px auto;
     padding: 1.6rem 1.2rem;
+  }
+}
+
+/* Ajuste específico para dispositivos muy pequeños */
+@media (max-width: 359px) {
+  .hora-prevision {
+    padding: 10px 3px;
+    min-height: 90px;
+  }
+  
+  .porcentaje {
+    font-size: 0.75rem;
+    padding: 1px 3px;
+    margin-top: 4px;
+  }
+  
+  .hora-valor {
+    font-size: 0.8rem;
+    margin-bottom: 2px;
+  }
+  
+  .dia-prevision {
+    font-size: 0.65rem;
   }
 }
 
