@@ -533,28 +533,43 @@ function obtenerClima() {
 
         let isDay = true;
         try {
-            const observationTime = new Date(current.localObsDateTime || Date.now());
-        
-            const parseTimeToDate = (timeStr) => {
-                if (!timeStr) throw new Error("Invalid time string for parsing");
+            // Obtener horas actuales como números simples
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            const currentTimeInMinutes = currentHour * 60 + currentMinute;
+            
+            // Parsear sunrise y sunset directamente como números
+            const parseSunTime = (timeStr) => {
+                if (!timeStr || timeStr === "--:--") return null;
+                const cleanTime = timeStr.replace(/\s*(AM|PM)/i, "");
+                const [hours, minutes] = cleanTime.split(":").map(num => parseInt(num, 10));
                 
-                // Convertimos primero a formato 24h para simplicidad
-                const hora24h = convertirA24h(timeStr);
-                const [h, m] = hora24h.split(":").map(Number);
+                // Si hay AM/PM, ajustar horas
+                let adjustedHours = hours;
+                if (timeStr.includes("PM") && hours < 12) adjustedHours += 12;
+                if (timeStr.includes("AM") && hours === 12) adjustedHours = 0;
                 
-                const date = new Date();
-                date.setHours(h, m, 0, 0);
-                return date;
+                return adjustedHours * 60 + minutes; // Retornar minutos totales desde medianoche
             };
-        
-            const sunriseDate = parseTimeToDate(astronomy.sunrise);
-            const sunsetDate = parseTimeToDate(astronomy.sunset);
-        
-            isDay = observationTime >= sunriseDate && observationTime < sunsetDate;
+            
+            const sunriseMinutes = parseSunTime(astronomy.sunrise);
+            const sunsetMinutes = parseSunTime(astronomy.sunset);
+            
+            // Si los tiempos se parsearon correctamente
+            if (sunriseMinutes !== null && sunsetMinutes !== null) {
+                isDay = currentTimeInMinutes >= sunriseMinutes && currentTimeInMinutes < sunsetMinutes;
+                console.log(`Determinación día/noche - Actual: ${currentTimeInMinutes} min, Amanecer: ${sunriseMinutes} min, Atardecer: ${sunsetMinutes} min, Es día: ${isDay}`);
+            } else {
+                // Fallback simple basado en horas del día
+                isDay = currentHour >= 7 && currentHour < 20;
+                console.log(`Fallback día/noche - Hora actual: ${currentHour}, Es día: ${isDay}`);
+            }
         } catch (e) {
-            console.error("Error parsing sunrise/sunset times:", e);
+            console.error("Error en la determinación día/noche:", e);
+            // Fallback muy simple
             const h = new Date().getHours();
-            isDay = h > 6 && h < 20;
+            isDay = h >= 7 && h < 20;
         }
 
         const clima = {
