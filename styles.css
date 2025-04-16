@@ -155,6 +155,7 @@ canvas#rain {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
 }
 #respuesta .emoji {
   display: flex;
@@ -179,6 +180,9 @@ canvas#rain {
   font-weight: 300;
   line-height: 1.5;
   padding: 0 10px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
 }
 #respuesta .error { /* Estilo para mensajes de error */
     color: var(--text-color-error);
@@ -195,6 +199,7 @@ canvas#rain {
   color: var(--text-color-secondary);
   margin-top: 0.5rem; /* separación vertical */
   font-weight: 300;
+  text-align: center;
 }
 
 #sol-info {
@@ -240,38 +245,6 @@ canvas#rain {
   padding-bottom: 40px;
 }
 
-/* Estilos para los Weather Icons */
-.wi {
-  font-size: 1.3em; /* Tamaño general para los iconos */
-  line-height: 1;
-  vertical-align: middle;
-}
-
-#respuesta .emoji .wi {
-  font-size: 3rem !important; /* Añadido !important para asegurar prioridad */
-  line-height: 1;
-  display: inline-block; /* Asegura que el icono se muestre correctamente */
-}
-
-.hora-icono .wi {
-  font-size: 1.8rem !important; /* Tamaño para los iconos de previsión */
-}
-
-#sol-info .wi {
-  margin-right: 5px;
-}
-
-.alerta-paraguas .wi {
-  font-size: 1.2em;
-  margin-right: 5px;
-}
-
-@media (max-width: 480px) {
-  #prevision {
-    padding-bottom: 35px;
-  }
-}
-
 #prevision h3 {
   font-size: 0.9rem; /* Más pequeño */
   font-weight: 400;
@@ -279,6 +252,8 @@ canvas#rain {
   color: var(--text-color-primary);
   text-transform: uppercase;
   letter-spacing: 1px;
+  text-align: center;
+  width: 100%;
 }
 
 .alerta-paraguas {
@@ -311,6 +286,7 @@ canvas#rain {
   box-sizing: border-box;
   overflow: visible;
   position: relative;
+  text-align: center;
 }
 
 /* Estilos base para todas las tarjetas de previsión */
@@ -539,6 +515,11 @@ canvas#rain {
   }
 }
 
+/* Mejoras de alineación de texto para todas las resoluciones */
+#respuesta, #detalles, #sol-info, #prevision, #info-clima, #horas-lluvia {
+  text-align: center;
+}
+
 /* Responsive para diferentes tamaños de pantalla */
 @media (max-width: 768px) {
   #barrio-menu, #mock-menu {
@@ -558,6 +539,32 @@ canvas#rain {
     width: calc(100% - 16px);
     margin: 8px auto;
     padding: 1.6rem 1.2rem;
+  }
+
+  #app, #prevision {
+    width: calc(100% - 16px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  #detalles, #sol-info {
+    display: flex;
+    flex-direction: row; /* Asegura que estén en línea */
+    justify-content: center; /* Centra los elementos horizontalmente */
+    flex-wrap: wrap; /* Permite que se ajusten en pantallas pequeñas */
+    text-align: center;
+    gap: 15px 20px; /* Espaciado entre elementos */
+    width: 100%; /* Asegura que ocupe todo el ancho disponible */
+  }
+  
+  #detalles > div, #sol-info > div {
+    text-align: center;
+    min-width: 80px; /* Ancho mínimo para evitar que se compriman demasiado */
+  }
+  
+  #prevision h3 {
+    text-align: center;
+    width: 100%;
   }
 }
 
@@ -584,245 +591,8 @@ canvas#rain {
   }
 }
 
-/* ----------------------------------- */
-/* MENÚS (BARRIO Y MOCK) */
-/* ----------------------------------- */
-#barrio-menu,
-#mock-menu {
-  position: fixed;
-  right: 20px;
-  width: 280px; /* Ligeramente más ancho */
-  max-width: calc(100% - 40px); /* Asegura padding en pantallas muy pequeñas */
-  background: var(--menu-bg);
-  color: var(--text-color-primary);
-  padding: 15px 20px;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  z-index: 10000;
-  backdrop-filter: blur(var(--blur-intensity));
-  -webkit-backdrop-filter: blur(var(--blur-intensity));
-  pointer-events: none; /* Desactivado hasta que se muestre */
-  opacity: 0;
-  transform: translateY(15px); /* Empieza ligeramente abajo */
-  transition: opacity var(--transition-fade), transform var(--transition-transform);
-  box-shadow: var(--app-shadow);
-}
-
-#barrio-menu { bottom: 80px; }
-#mock-menu { bottom: 20px; }
-
-#barrio-menu.visible,
-#mock-menu.visible {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto; /* Activado cuando es visible */
-}
-
-#barrio-menu label,
-#mock-menu label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: var(--text-color-secondary);
-}
-
-#barrio-options {
-  display: flex;
-  gap: 10px;
-  justify-content: center; /* Centra los botones */
-  margin-top: 10px;
-}
-
-#barrio-options button {
-  background: none;
-  border: 1px solid var(--app-border);
-  color: var(--text-color-primary);
-  font-size: 1.8rem; /* Más grandes */
-  border-radius: 10px;
-  cursor: pointer;
-  padding: 8px 12px;
-  transition: transform 0.2s ease, background-color 0.2s ease;
-  line-height: 1; /* Ajuste para emojis */
-}
-
-#barrio-options button:hover,
-#barrio-options button:focus {
-  background-color: rgba(255, 255, 255, 0.1);
-  transform: scale(1.05); /* Feedback visual */
-  outline: none;
-}
-
-#mock-menu select {
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: 6px;
-  border: 1px solid var(--app-border);
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--text-color-primary);
-  font-family: inherit;
-  font-size: 0.9rem;
-}
-#mock-menu select:focus {
-  outline: none;
-  border-color: var(--text-color-secondary);
-}
-
-/* ----------------------------------- */
-/* ANIMACIONES */
-/* ----------------------------------- */
-@keyframes fadeInApp {
-  from { transform: translateY(15px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes sunnyFlow { /* Mantenida igual */
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@keyframes floatIcon {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-
-/* ----------------------------------- */
-/* RESPONSIVE MEJORADO */
-/* ----------------------------------- */
-
-/* Base para tablets */
-@media (max-width: 768px) {
-  body {
-    font-family: 'Rubik', sans-serif;
-    background: var(--bg-gradient-default);
-    height: 100dvh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 15px 12px 100px;
-    padding-top: 50px;
-    color: var(--text-color-primary);
-    box-sizing: border-box;
-  }
-  
-  #logo {
-    position: relative;
-    top: 10px;
-    margin-bottom: 20px;
-    font-size: 0.85rem;
-    letter-spacing: 1.5px;
-  }
-  
-  #app, #prevision {
-    max-width: 450px;
-    width: calc(100% - 16px); /* 8px de margen a cada lado */
-    margin: 8px auto;
-    padding: 1.8rem 1.2rem;
-  }
-  
-  .alerta-paraguas {
-    max-width: 430px;
-  }
-  
-  #horas-lluvia {
-    width: 100%;
-    padding: 10px 8px;
-  }
-  
-  /* Mejora de los menús */
-  #barrio-menu, #mock-menu {
-    width: 90%;
-    max-width: 350px;
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%) translateY(15px);
-    }
-
-  #barrio-menu.visible, #mock-menu.visible {
-    transform: translateX(-50%) translateY(0);
-  }
-  
-  #barrio-menu {
-    bottom: 90px;
-  }
-  
-  #mock-menu {
-    bottom: 20px;
-  }
-}
-
-/* Ajustes para tablets pequeñas */
-@media (max-width: 600px) {
-  body {
-    font-family: 'Rubik', sans-serif;
-    background: var(--bg-gradient-default);
-    height: 100dvh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 15px 12px 100px;
-    padding-top: 50px;
-    color: var(--text-color-primary);
-    box-sizing: border-box;
-  }
-  
-  #app, #prevision {
-    max-width: none;
-    width: calc(100% - 16px); /* 8px de margen a cada lado */
-    margin: 8px auto;
-  }
-  
-  #app {
-    padding: 1.5rem 1rem;
-  }
-  
-  #respuesta {
-    font-size: 1.6rem;
-    min-height: 100px; /* Altura reducida */
-  }
-  
-  #respuesta .emoji {
-    font-size: 3rem;
-  }
-  
-  #respuesta .temp {
-    font-size: 2.5rem;
-  }
-  
-  #respuesta .texto {
-    font-size: 1rem;
-  }
-  
-  #detalles, #sol-info {
-    font-size: 0.85rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px 25px;
-  }
-  
-  #info-clima {
-    bottom: 10px;
-    font-size: 0.75rem;
-  }
-  
-  /* Limitar ancho de menús en pantallas pequeñas */
-  #barrio-menu, #mock-menu {
-    width: calc(100% - 30px);
-    max-width: 350px;
-  }
-  
-  #horas-lluvia {
-    padding: 8px 4px;
-    gap: 8px;
-  }
-}
-
-/* Ajustes específicos para móviles */
-@media (max-width: 480px) {
+/* Para pantallas muy pequeñas, ajustes adicionales */
+@media (max-width: 480px) {  
   body {
     font-family: 'Rubik', sans-serif;
     background: var(--bg-gradient-default);
@@ -871,12 +641,20 @@ canvas#rain {
   #respuesta .texto {
     font-size: 0.95rem;
     padding: 0 5px;
+    width: 100%; /* Asegura que el texto ocupe todo el ancho */
+    box-sizing: border-box;
+    text-align: center;
   }
   
   #detalles, #sol-info {
-    gap: 10px;
+    gap: 10px 20px; /* Espaciado reducido */
     margin-top: 0.3rem;
     font-size: 0.8rem;
+  }
+  
+  #detalles > div, #sol-info > div {
+    min-width: auto; /* Permitir que se adapten al contenido */
+    padding: 0 5px; /* Pequeño padding horizontal */
   }
   
   #prevision {
@@ -889,7 +667,6 @@ canvas#rain {
     margin-bottom: 0.6rem;
   }
   
-  /* Ajustar el scroll horizontal para móviles */
   #horas-lluvia {
     gap: 6px;
     padding: 6px 4px;
@@ -897,7 +674,6 @@ canvas#rain {
     margin: 0 auto;
   }
   
-  /* Ajuste de menús para móviles */
   #barrio-menu, #mock-menu {
     padding: 12px 15px;
     border-radius: 10px;
@@ -980,6 +756,38 @@ canvas#rain {
     width: calc(100% - 10px);
     padding: 0.6rem 0.7rem;
   }
+}
+
+/* Estilos para los menús flotantes (barrio y mock) */
+#barrio-menu, #mock-menu {
+  position: fixed;
+  bottom: 20px;
+  background: var(--menu-bg);
+  border-radius: 15px;
+  padding: 15px 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease, display 0s 0.3s;
+  display: none; /* Oculto por defecto */
+}
+
+#barrio-menu {
+  left: 15px;
+  right: unset;
+}
+
+#mock-menu {
+  right: 15px;
+  left: unset;
+}
+
+#barrio-menu.visible, #mock-menu.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  display: block;
 }
 
 /* Estilos para los iconos SVG del clima */
