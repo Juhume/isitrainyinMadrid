@@ -55,7 +55,7 @@ body {
   justify-content: flex-start;
   align-items: center;
   padding: 15px 12px 100px;
-  padding-top: 50px;
+  padding-top: 80px;
   color: var(--text-color-primary);
   box-sizing: border-box;
 }
@@ -71,7 +71,7 @@ body {
     justify-content: flex-start;
     align-items: center;
     padding: 15px 12px 100px;
-    padding-top: 50px;
+    padding-top: 80px;
     color: var(--text-color-primary);
     box-sizing: border-box;
   }
@@ -110,19 +110,93 @@ canvas#rain {
 /* ----------------------------------- */
 /* COMPONENTES PRINCIPALES */
 /* ----------------------------------- */
+/* Estilo base del título manteniendo la misma posición para todas las resoluciones */
 #logo {
   position: absolute;
-  top: 15px; /* Un poco más de espacio */
+  top: 25px; /* Posición fija consistente para todas las resoluciones */
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.9rem; /* Ligeramente más pequeño */
-  font-weight: 400;
-  color: var(--text-color-muted);
-  text-transform: uppercase;
-  letter-spacing: 2px; /* Más espaciado */
+  font-family: 'Montserrat', 'Rubik', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+  background: linear-gradient(to right, var(--text-color-primary), var(--text-color-muted));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 10px rgba(255, 255, 255, 0.15);
+  padding-bottom: 3px;
   z-index: 10;
   text-align: center;
-  width: 90%; /* Para que no se corte en pantallas pequeñas */
+  width: 90%;
+  text-transform: uppercase;
+  animation: titleFade 0.5s ease-out;
+  line-height: 1.4;
+}
+
+/* Línea decorativa bajo el título */
+#logo::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 2px;
+  background: var(--text-color-muted);
+  border-radius: 2px;
+}
+
+/* Media queries específicas para tamaños problemáticos */
+@media (max-width: 480px) {
+  #logo {
+    font-size: 1.3rem !important; /* Aumentado de 1.1rem a 1.3rem y forzado con !important */
+    letter-spacing: 2px;
+    position: absolute; /* Mantener posición absoluta */
+    top: 20px; /* Ajustar a una posición más arriba */
+  }
+  
+  body {
+    padding-top: 95px; /* Aumentado para dar más espacio al título */
+  }
+  
+  #logo {
+    font-family: 'Montserrat', 'Rubik', sans-serif;
+    font-size: 1.3rem !important; /* Aumentado de 1rem a 1.3rem y forzado */
+    font-weight: 500;
+    letter-spacing: 2px;
+    background: linear-gradient(to right, var(--text-color-primary), var(--text-color-muted)); /* Gradiente sutil */
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1); /* Halo sutil */
+    padding-bottom: 3px; /* Espacio para el subrayado */
+    position: absolute; /* Mantener posición absoluta */
+    top: 20px; /* Ajustar a una posición más arriba */
+  }
+  
+  #logo::after {
+    bottom: -5px; /* Reducir separación */
+  }
+  
+  #app {
+    margin-top: 30px; /* Aumentar margen superior para separarla del título */
+  }
+}
+
+@media (max-width: 360px) {
+  #logo {
+    font-size: 1rem;
+    letter-spacing: 2px;
+  }
+  
+  body {
+    padding-top: 90px;
+  }
+  
+  #app {
+    margin-top: 25px;
+  }
 }
 
 #app {
@@ -610,15 +684,37 @@ canvas#rain {
     justify-content: flex-start;
     align-items: center;
     padding: 15px 12px 100px;
-    padding-top: 60px;
+    padding-top: 95px; /* Aumentado para dar más espacio al título */
     color: var(--text-color-primary);
     box-sizing: border-box;
   }
   
   #logo {
-    font-size: 0.8rem;
-    letter-spacing: 1px;
-    width: 95%;
+    font-family: 'Montserrat', 'Rubik', sans-serif; /* Fuente más distintiva */
+    font-size: 1.3rem !important; /* Ligeramente más grande */
+    font-weight: 500; /* Más peso */
+    letter-spacing: 2px;
+    background: linear-gradient(to right, var(--text-color-primary), var(--text-color-muted)); /* Gradiente sutil */
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1); /* Halo sutil */
+    padding-bottom: 3px; /* Espacio para el subrayado */
+    position: absolute; /* Mantener posición absoluta */
+    top: 20px; /* Ajustar a una posición más arriba */
+  }
+  
+  /* Línea decorativa bajo el título */
+  #logo::after {
+    content: '';
+    position: absolute;
+    bottom: -5px; /* Reducir separación */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 2px;
+    background: var(--text-color-muted);
+    border-radius: 2px;
   }
   
   #app, #prevision {
@@ -629,6 +725,7 @@ canvas#rain {
   #app {
     padding: 1.2rem 0.9rem;
     border-radius: 1rem;
+    margin-top: 30px; /* Aumentar margen superior para separarla del título */
   }
   
   #respuesta {
@@ -723,7 +820,7 @@ canvas#rain {
     justify-content: flex-start;
     align-items: center;
     padding: 15px 12px 100px;
-    padding-top: 50px;
+    padding-top: 90px;
     color: var(--text-color-primary);
     box-sizing: border-box;
   }
@@ -738,6 +835,7 @@ canvas#rain {
   
   #app {
     padding: 1rem 0.8rem;
+    margin-top: 25px;
   }
   
   #respuesta {

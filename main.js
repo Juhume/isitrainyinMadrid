@@ -768,6 +768,18 @@ function aplicarEstilosClima(clima) {
     });
 
     gestionarCanvasEfecto(canvas, script); // 'canvas' aquí es el ID del canvas ('particles' o 'rain')
+
+    // Añadir clase al logo según clima
+    if (appState.dom.logo) {
+    // Quitar clases anteriores
+    appState.dom.logo.classList.remove('climate-sun', 'climate-rain', 'climate-snow', 'climate-night');
+    
+    // Añadir clase según clima actual
+    if (clase === 'fondo-sun') appState.dom.logo.classList.add('climate-sun');
+    else if (clase === 'fondo-rain' || clase === 'fondo-storm') appState.dom.logo.classList.add('climate-rain');
+    else if (clase === 'fondo-snow') appState.dom.logo.classList.add('climate-snow');
+    else if (clase === 'fondo-clear-night') appState.dom.logo.classList.add('climate-night');
+}
 }
 
 // Gestiona la limpieza y carga de scripts de efectos
