@@ -158,6 +158,8 @@ canvas#rain {
   text-align: center;
 }
 #respuesta .emoji {
+  cursor: pointer;
+  transition: transform 0.2s ease;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -166,6 +168,11 @@ canvas#rain {
   font-size: 3.5rem; /* Ligeramente más pequeño */
   line-height: 1;
 }
+
+#respuesta .emoji:hover {
+  transform: scale(1.05);
+}
+
 #respuesta .temp {
   font-size: 2.8rem; /* Ligeramente más grande */
   font-weight: 500;
@@ -790,6 +797,38 @@ canvas#rain {
   display: block;
 }
 
+/* Estilos específicos para el select del mock menu */
+#mock-select {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  margin-top: 8px;
+  appearance: menulist; /* Forzar la apariencia nativa */
+  -webkit-appearance: menulist; /* Para Safari */
+  cursor: pointer;
+  z-index: 150; /* Asegurar que esté por encima de otras capas */
+  position: relative; /* Establecer posición relativa */
+}
+
+/* Estilos para las opciones en navegadores que lo soportan */
+#mock-select option {
+  background-color: #1e293b;
+  color: white;
+  padding: 8px;
+}
+
+/* Área de toque segura alrededor del select */
+#mock-menu label {
+  margin-bottom: 10px;
+  display: block;
+  cursor: default;
+}
+
 /* Estilos para los iconos SVG del clima */
 .weather-icon {
   width: 64px;
@@ -810,4 +849,9 @@ canvas#rain {
   height: 40px;
   display: block;
   margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

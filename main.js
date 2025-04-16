@@ -407,7 +407,7 @@ function setupEventListeners() {
     document.addEventListener("keydown", (e) => {
         const key = e.key.toLowerCase();
         if (key === "b") toggleMenuBarrio();
-        else if (key === "c") toggleMenuMock();
+        else if (key === "m") toggleMenuMock();
     });
 
     if (window.DeviceMotionEvent) {
@@ -649,6 +649,8 @@ function actualizarUI(clima) {
     } else {
         alerta.style.display = "none";
     }  
+
+    setupEmojiClickDetector();
 }
 
 // Visualización mejorada de previsión por horas
@@ -912,15 +914,26 @@ function toggleMenuBarrio(forceState = null) {
     appState.menuBarrioVisible = shouldBeVisible; 
 }
 
-function toggleMenuMock() { 
+function toggleMenuMock(forceState = null) { 
     const menu = appState.dom.mockMenu; 
-    appState.menuMockVisible = !appState.menuMockVisible; 
-    menu.classList.toggle("visible", appState.menuMockVisible); 
-    menu.style.display = appState.menuMockVisible ? "block" : "none";
+    if (!menu) return;
     
-    // NUEVO: Si cerramos el menú y no hay clima simulado seleccionado, actualizar
-    if (!appState.menuMockVisible && !appState.mockClima) {
-        obtenerClima(); // Obtener clima real actualizado
+    const shouldBeVisible = forceState !== null ? forceState : !appState.menuMockVisible; 
+    
+    // Guardar estado anterior para comparar después
+    const estadoAnterior = appState.menuMockVisible;
+    
+    // Actualizar UI
+    menu.classList.toggle("visible", shouldBeVisible); 
+    menu.style.display = shouldBeVisible ? "block" : "none";
+    
+    // Actualizar estado
+    appState.menuMockVisible = shouldBeVisible; 
+    
+    // Solo refrescar si CAMBIAMOS el valor de mockClima, no al cerrar el menú
+    if (estadoAnterior && !shouldBeVisible && appState.mockClima) {
+        // No hacemos nada, conservamos el modo simulado actual
+        console.log("Cerrando menú mock, manteniendo simulación: " + appState.mockClima);
     }
 }
 
@@ -973,4 +986,68 @@ function transicionBarrio() {
             appState.dom.body.style.transition = 'var(--transition-bg)'; 
         }, 200); 
     }, 200); 
+}
+
+// Contador para detectar múltiples clics en el emoji
+let emojiClickCount = 0;
+let emojiClickTimer = null;
+
+function setupEmojiClickDetector() {
+    const emojiContainer = document.querySelector('#respuesta .emoji');
+    
+    if (emojiContainer) {
+        emojiContainer.style.cursor = 'pointer';
+        
+        emojiContainer.addEventListener('click', (e) => {
+            e.stopPropagation();
+            
+            // Incrementar contador para ambos casos (abrir o cerrar)
+            emojiClickCount++;
+            
+            // Reiniciar el temporizador en cada clic
+            clearTimeout(emojiClickTimer);
+            
+            // Si se alcanza el umbral de 5 clics
+            if (emojiClickCount >= 5) {
+                emojiClickCount = 0; // Resetear contador
+                
+                // Alternar el estado del menú (abrir si está cerrado, cerrar si está abierto)
+                toggleMenuMock(!appState.menuMockVisible);
+                
+                // Animación de feedback (diferente según se abra o cierre)
+                if (emojiContainer.querySelector('img')) {
+                    // Si estamos abriendo, girar en sentido normal
+                    // Si estamos cerrando, girar en sentido inverso
+                    const animationDirection = appState.menuMockVisible ? '' : 'reverse';
+                    emojiContainer.querySelector('img').style.animation = `spin 0.5s ease-in-out ${animationDirection}`;
+                    
+                    // Restaurar animación flotante después
+                    setTimeout(() => {
+                        if (emojiContainer.querySelector('img')) {
+                            emojiContainer.querySelector('img').style.animation = 'floatIcon 3s ease-in-out infinite';
+                        }
+                    }, 500);
+                }
+            } else {
+                // Proporcionar feedback visual sutil del progreso
+                if (emojiContainer.querySelector('img')) {
+                    // Pequeño pulso para cada clic
+                    emojiContainer.querySelector('img').style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        if (emojiContainer.querySelector('img')) {
+                            emojiContainer.querySelector('img').style.transform = '';
+                        }
+                    }, 100);
+                }
+                
+                // Mostrar cuántos clics faltan (opcional)
+                console.log(`Clics: ${emojiClickCount}/5`);
+                
+                // Reiniciar contador después de 3 segundos sin clics
+                emojiClickTimer = setTimeout(() => {
+                    emojiClickCount = 0;
+                }, 3000);
+            }
+        });
+    }
 }
