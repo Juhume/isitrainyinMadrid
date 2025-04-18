@@ -447,6 +447,7 @@ function convertirA24h(horaStr) {
 }
 
 function obtenerClima() {
+    // Al finalizar la carga y formateo del clima, añadir:
     actualizarTitulo();
     // Comprobar si respuesta existe antes de modificarlo
     if(appState.dom.respuesta) {
@@ -507,6 +508,31 @@ function obtenerClima() {
         // Pasar directamente el objeto climaSimulado
         actualizarUI(climaSimulado);
         aplicarEstilosClima(climaSimulado);
+
+        const advice = getRunningAdviceFromClima(clima);
+
+        const desfavorables = (advice.detallesDesfavorables || []).map(txt => `<li class="desfavorable">${txt}</li>`).join('');
+        const favorables = (advice.detallesFavorables || []).map(txt => `<li class="favorable">${txt}</li>`).join('');
+        
+        document.getElementById('runningTitle').textContent = advice.title;
+        document.getElementById('runningMessage').textContent = advice.message;
+        
+        document.getElementById('runningDetails').innerHTML = `
+          ${desfavorables ? `
+            <div class="bloque-condicion">
+              <h4 class="condicion-titulo">⚠️ Condiciones desfavorables</h4>
+              <ul class="desfavorables">${desfavorables}</ul>
+            </div>` : ''
+          }
+          ${favorables ? `
+            <div class="bloque-condicion">
+              <h4 class="condicion-titulo">✅ Condiciones favorables</h4>
+              <ul class="favorables">${favorables}</ul>
+            </div>` : ''
+          }
+        `;
+        
+
         return;
     }
 
@@ -519,19 +545,30 @@ function obtenerClima() {
     console.log("Consultando API:", API_URL);
 
     fetch(API_URL)
-      .then(res => {
-        if (!res.ok) throw new Error(`Error HTTP ${res.status} - ${res.statusText}`);
-        return res.json();
-      })
-      .then(data => {
-        if (!data?.current_condition?.[0] || !data?.weather?.[0]?.hourly || !data?.weather?.[0]?.astronomy?.[0]) {
-          throw new Error("Formato de datos inesperado recibido de la API.");
-        }
+    .then(res => {
+      if (!res.ok) throw new Error(`Error HTTP ${res.status} - ${res.statusText}`);
+      return res.text(); // leer como texto para detectar errores de texto plano
+    })
+    .then(text => {
+      if (text.startsWith("Unknown location")) {
+        throw new Error("Ubicación no reconocida. La API no puede proporcionar datos para esta zona.");
+      }
+  
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        throw new Error("La respuesta del servidor no se pudo interpretar como datos válidos.");
+      }
 
         const current = data.current_condition[0];
         const weather = data.weather[0];
         const astronomy = weather.astronomy[0];
         const weatherCode = current.weatherCode || null;
+        const windSpeed = current.windspeedKmph;
+        const dewPoint     = current.DewPointC ?? weather.hourly[0].DewPointC;
+        const windGustKmph = current.WindGustKmph ?? weather.hourly[0].WindGustKmph;
+        const visibility   = current.visibility;
 
         let isDay = true;
         try {
@@ -575,38 +612,107 @@ function obtenerClima() {
         }
 
         const clima = {
-          desc: current.lang_es?.[0]?.value || current.weatherDesc?.[0]?.value || "Desconocido",
-          temp: current.temp_C,
-          feelsLike: current.FeelsLikeC,
-          humidity: current.humidity,
-          chanceofrain: weather.hourly.slice(0, 5).map(h => h.chanceofrain || "0"),
-          updatedAt: formatearHora(current.localObsDateTime || Date.now()),
-          sunrise: convertirA24h(astronomy?.sunrise || "--:--"),
-          sunset: convertirA24h(astronomy?.sunset || "--:--"),
-          weatherCode: weatherCode,
-          isDay: isDay
-        };
+            desc: current.lang_es?.[0]?.value || current.weatherDesc?.[0]?.value || "Desconocido",
+            temp: current.temp_C,
+            feelsLike: current.FeelsLikeC,
+            humidity: current.humidity,
+            dewPoint,
+            uvIndex: current.uvIndex,
+            cloudCover: current.cloudcover,
+            windGustKmph,
+            visibility,
+            chanceofrain: weather.hourly.slice(0, 5).map(h => h.chanceofrain || "0"),
+            updatedAt: formatearHora(current.localObsDateTime || Date.now()),
+            sunrise: convertirA24h(astronomy?.sunrise || "--:--"),
+            sunset: convertirA24h(astronomy?.sunset || "--:--"),
+            weatherCode,
+            windSpeed,
+            isDay: current.isday === "yes"
+          };
+          
+          
 
         console.log("Clima procesado:", clima);
+
         // Pasar el objeto clima completo
         actualizarUI(clima);
         aplicarEstilosClima(clima);
+
+        const advice = getRunningAdviceFromClima(clima);
+
+        const desfavorables = (advice.detallesDesfavorables || []).map(txt => `<li class="desfavorable">${txt}</li>`).join('');
+        const favorables = (advice.detallesFavorables || []).map(txt => `<li class="favorable">${txt}</li>`).join('');
+        
+        document.getElementById('runningTitle').textContent = advice.title;
+        document.getElementById('runningMessage').textContent = advice.message;
+        
+        document.getElementById('runningDetails').innerHTML = `
+          ${desfavorables ? `
+            <div class="bloque-condicion">
+              <h4 class="condicion-titulo">⚠️ Condiciones desfavorables</h4>
+              <ul class="desfavorables">${desfavorables}</ul>
+            </div>` : ''
+          }
+          ${favorables ? `
+            <div class="bloque-condicion">
+              <h4 class="condicion-titulo">✅ Condiciones favorables</h4>
+              <ul class="favorables">${favorables}</ul>
+            </div>` : ''
+          }
+        `;        
+
       })
       .catch(error => {
         console.error("Error al obtener o procesar el clima:", error);
-        if(appState.dom.respuesta) {
-             appState.dom.respuesta.innerHTML = `<div class='error'>No se pudo cargar el clima.<br><small>${error.message}</small></div>`;
+      
+        // Mostrar mensaje de error al usuario
+        if (appState.dom.respuesta) {
+          appState.dom.respuesta.innerHTML = `
+            <div class='error'>
+              ⚠️ No se pudo obtener información del clima.<br>
+              <small>${error.message}</small><br><br>
+              <button id="boton-reintentar" class="boton-reintentar">🔄 Reintentar</button>
+            </div>`;
         }
-        aplicarEstilosClima({ weatherCode: null, desc: 'Error', isDay: true }); // Aplicar estilo de error
-        // Limpia campos (comprobando si existen antes)
-        if(appState.dom.humedad) appState.dom.humedad.textContent = "";
-        if(appState.dom.sensacion) appState.dom.sensacion.textContent = "";
-        if(appState.dom.salidaSol) appState.dom.salidaSol.textContent = "";
-        if(appState.dom.puestaSol) appState.dom.puestaSol.textContent = "";
-        if(appState.dom.horasLluvia) appState.dom.horasLluvia.innerHTML = "---";
-        if(appState.dom.infoClima) appState.dom.infoClima.textContent = "Actualizado: --:--";
+      
+        // Ocultar toda la información excepto #app
+        const elementosAEsconder = [
+        '.weather-card.running-advice',
+        '#prevision',
+        '#info-clima',
+        '#alerta-paraguas',
+        '#mock-menu'
+        ];
+  
+        elementosAEsconder.forEach(selector => {
+        const el = document.querySelector(selector);
+        if (el) el.style.display = 'none';
+        });
+      
+        // Fondo neutro
+        aplicarEstilosClima({ weatherCode: null, desc: 'Error', isDay: true });
+      
+        // Limpiar campos
+        if (appState.dom.humedad) appState.dom.humedad.textContent = "";
+        if (appState.dom.sensacion) appState.dom.sensacion.textContent = "";
+        if (appState.dom.salidaSol) appState.dom.salidaSol.textContent = "";
+        if (appState.dom.puestaSol) appState.dom.puestaSol.textContent = "";
+        if (appState.dom.horasLluvia) appState.dom.horasLluvia.innerHTML = "---";
+        if (appState.dom.infoClima) appState.dom.infoClima.textContent = "Actualizado: --:--";
+      
+        // Activar botón de reintentar
+        setTimeout(() => {
+          const boton = document.getElementById("boton-reintentar");
+          if (boton) {
+            boton.addEventListener("click", () => {
+              boton.disabled = true;
+              boton.textContent = "Consultando...";
+              obtenerClima(); // Recarga la consulta
+            });
+          }
+        }, 0);
       });
-}
+    }
 
 // --- ACTUALIZACIÓN DE LA INTERFAZ (UI) ---
 
@@ -615,43 +721,67 @@ function actualizarUI(clima) {
     if (!appState.dom.respuesta || !appState.dom.humedad || !appState.dom.sensacion ||
         !appState.dom.horasLluvia || !appState.dom.infoClima || !appState.dom.salidaSol ||
         !appState.dom.puestaSol) {
-        console.error("Error Crítico: Falta uno o más elementos del DOM en actualizarUI.");
-        return;
+      console.error("Error Crítico: Falta uno o más elementos del DOM en actualizarUI.");
+      return;
     }
-
+  
     const { desc, temp, feelsLike, humidity, chanceofrain, updatedAt, sunrise, sunset, weatherCode, isDay } = clima;
     const { emoji } = getWeatherInfoFromCode(weatherCode, desc, isDay);
     const esMalTiempo = /rain|thunder|snow|lluvia|tormenta|nieve/i.test(desc);
-
-    const mensaje = esMalTiempo
-        ? `Sí, ${desc.toLowerCase()}.`
-        : `No, ${desc.toLowerCase()}.`;
-
+  
+    const mensajeClima = esMalTiempo
+      ? `Sí, ${desc.toLowerCase()}.`
+      : `No, ${desc.toLowerCase()}.`;
+  
     appState.dom.respuesta.innerHTML = `
-        <div class='emoji'>${emoji}</div>
-        <div class='temp'>${temp}°C</div>
-        <div class='texto'>${mensaje}</div>`;
+      <div class='emoji'>${emoji}</div>
+      <div class='temp'>${temp}°C</div>
+      <div class='texto'>${mensajeClima}</div>`;
     appState.dom.humedad.textContent = `Humedad: ${humidity}%`;
     appState.dom.sensacion.textContent = `Sensación: ${feelsLike}°C`;
-
+  
     actualizarHorasLluvia(clima.chanceofrain);
-
+  
     appState.dom.infoClima.textContent = `Actualizado: ${updatedAt}`;
     appState.dom.salidaSol.innerHTML = `<i class="wi wi-sunrise"></i> ${sunrise}`;
     appState.dom.puestaSol.innerHTML = `<i class="wi wi-sunset"></i> ${sunset}`;
-    
-    const alerta = appState.dom.alertaParaguas || document.getElementById("alerta-paraguas");
-    const hayLluviaAlta = clima.chanceofrain.some(prob => parseInt(prob, 10) >= 50);
   
-    if (hayLluviaAlta) {
-        alerta.innerHTML = `<img src="weather-icons/line/umbrella.svg" alt="Paraguas" class="weather-icon-small"> Parece que va a llover pronto. ¡Lleva paraguas!`;
-        alerta.style.display = "block";
-    } else {
-        alerta.style.display = "none";
-    }  
+// ——— Alerta de paraguas robusta y coherente ———
+const alerta = appState.dom.alertaParaguas || document.getElementById("alerta-paraguas");
 
-    setupEmojiClickDetector();
+const chanceRainArray = Array.isArray(clima.chanceofrain)
+  ? clima.chanceofrain.map(p => parseInt(p, 10))
+  : [];
+
+const lluviaActualPorPrecipitacion = parseFloat(clima.precipMM) > 0;
+const lluviaActualPorDescripcion = /lluvia|rain|tormenta|chubasc|shower/i.test(clima.desc || "");
+const lluviaActual = lluviaActualPorPrecipitacion || lluviaActualPorDescripcion;
+
+const lluviaFuturaIndex = chanceRainArray.findIndex(p => p >= 50);
+
+let mensajeParaguas = "";
+
+if (lluviaActual && lluviaFuturaIndex >= 0) {
+  mensajeParaguas = "Está lloviendo y seguirá lloviendo. Si sales ahora, lleva paraguas.";
+} else if (lluviaActual) {
+  mensajeParaguas = "Está lloviendo actualmente. Lleva paraguas si vas a salir.";
+} else if (lluviaFuturaIndex >= 0) {
+  mensajeParaguas = `Parece que va a llover en ${lluviaFuturaIndex + 1} h. ¡Lleva paraguas si sales!`;
 }
+
+if (mensajeParaguas) {
+  alerta.innerHTML = `
+    <img src="weather-icons/line/umbrella.svg" class="weather-icon-small">
+    ${mensajeParaguas}`;
+  alerta.style.display = "block";
+} else {
+  alerta.style.display = "none";
+}
+
+  
+    setupEmojiClickDetector();
+  }
+  
 
 // Visualización mejorada de previsión por horas
 function actualizarHorasLluvia(chanceofrain) {
@@ -830,7 +960,6 @@ function gestionarCanvasEfecto(targetCanvasId, scriptSrc) {
         return;
     }
 
-    // ¡ESTA ES LA PARTE CLAVE QUE NECESITA CORRECCIÓN!
     // Normaliza las referencias para obtener el canvas correcto
     let targetCanvasKey;
     if (targetCanvasId === 'weather-canvas') {
@@ -1063,3 +1192,166 @@ function setupEmojiClickDetector() {
         });
     }
 }
+
+function getRunningAdviceFromClima(clima) {
+    const parse = (val, fallback = 0) => isNaN(parseFloat(val)) ? fallback : parseFloat(val);
+    const parseIntSafe = (val, fallback = 0) => isNaN(parseInt(val)) ? fallback : parseInt(val);
+  
+    const t    = parse(clima.temp);
+    const f    = parse(clima.feelsLike);
+    const h    = parseIntSafe(clima.humidity);
+    const d    = parse(clima.dewPoint);
+    const rain = parse(clima.precipMM || clima.chanceofrain?.[0]);
+    const code = parseIntSafe(clima.weatherCode);
+    const w    = parse(clima.windSpeed);
+    const gust = parse(clima.windGustKmph);
+    const uv   = parseIntSafe(clima.uvIndex);
+    const c    = parseIntSafe(clima.cloudCover);
+    const vis  = parse(clima.visibility);
+    const hr   = new Date(clima.localObsDateTime || Date.now()).getHours();
+    const desc = (clima.desc || "").toLowerCase();
+  
+    const requiredValues = { t, f, h, d, rain, code, w, gust, uv, c, vis };
+  
+    for (const [key, val] of Object.entries(requiredValues)) {
+      if (isNaN(val)) {
+        return {
+          level: 'peligroso',
+          title: '❌ No se puede evaluar',
+          message: 'Faltan datos clave del clima para valorar la situación.',
+          detallesDesfavorables: [`Falta información clave para evaluar el clima (${key})`],
+          detallesFavorables: []
+        };
+      }
+    }
+  
+    const rainCodes = [176,263,266,281,284,293,296,299,302,305,308,311,314,353,356,359,362,365,377];
+    const isGoodHour = (hr >= 6 && hr <= 10) || (hr >= 18 && hr <= 21);
+    const isDaytime = hr >= 11 && hr <= 17;
+  
+    let criticalFails = 0;
+    let moderateFails = 0;
+    let flagSensacionCritica = false;
+  
+    const favorables = [];
+    const desfavorables = [];
+  
+    const condiciones = [
+      {
+        tipo: 'crítico',
+        condicion: rain > 0 || rainCodes.includes(code) || /lluvia|rain/.test(desc),
+        desfavorable: `🌧️ Está lloviendo ahora: ${clima.desc}. Correr bajo la lluvia puede provocar resbalones, ropa empapada o incomodidad térmica.`,
+        favorable: `🌤️ No llueve (precipitación: ${rain} mm). El suelo está seco y no hay riesgo de lluvia inmediata.`
+      },
+      {
+        tipo: 'crítico',
+        condicion: f > 28,
+        desfavorable: `🔥 Sensación térmica muy alta (${f} °C). Por encima de 28 °C hay riesgo de sobrecalentamiento.`,
+        onFail: () => flagSensacionCritica = true
+      },
+      {
+        tipo: 'crítico',
+        condicion: f < 5 && w > 20,
+        desfavorable: `❄️ Frío con viento: sensación de ${f} °C, viento de ${w} km/h. Riesgo de rigidez muscular.`,
+        onFail: () => flagSensacionCritica = true
+      },
+      {
+        tipo: 'crítico',
+        condicion: vis < 2,
+        desfavorable: `🌫️ Visibilidad muy baja (${vis} km). Riesgo al correr en zonas poco iluminadas o con tráfico.`,
+        favorable: `👁️ Buena visibilidad: ${vis} km. Puedes correr con seguridad.`
+      },
+      {
+        tipo: 'moderado',
+        condicion: h > 85,
+        desfavorable: `💦 Humedad alta (${h}%). El sudor se evapora mal, lo que dificulta la regulación térmica.`,
+        favorable: `💧 Humedad adecuada: ${h}%. Buena capacidad del cuerpo para enfriarse.`
+      },
+      {
+        tipo: 'moderado',
+        condicion: gust > 30,
+        desfavorable: `💨 Rachas de viento intensas (hasta ${gust} km/h). Podrían desestabilizar o aumentar el esfuerzo.`,
+        favorable: `🌬️ Rachas suaves: ${gust} km/h. Cómodo para correr.`
+      },
+      {
+        tipo: 'moderado',
+        condicion: uv > 8,
+        desfavorable: `☀️ Radiación UV alta (${uv}). Usa protección solar si corres al sol.`,
+        favorable: `🧴 Radiación UV moderada: ${uv}. Bajo riesgo para la piel.`
+      },
+      {
+        tipo: 'moderado',
+        condicion: (t > 20 || f > 22) && !isGoodHour && isDaytime,
+        desfavorable: `🕒 Hora no ideal con calor (${hr} h). Mejor correr temprano o al final del día.`,
+        favorable: `🕘 Hora adecuada: ${hr} h. Buen momento para evitar calor excesivo.`
+      },
+      {
+        tipo: 'moderado',
+        condicion: t - d < 2,
+        desfavorable: `🌫️ Aire muy húmedo (rocío: ${d} °C). El sudor se evapora mal y puede generar incomodidad.`,
+        favorable: `🌬️ Aire seco (rocío: ${d} °C). Buena transpiración.`
+      },
+      {
+        tipo: 'informativo',
+        condicion: t < 10 || t > 25,
+        desfavorable: `🌡️ Temperatura fuera del rango ideal (${t} °C). Aunque es tolerable, el cuerpo rinde mejor entre 10 °C y 25 °C.`,
+        favorable: `🌡️ Temperatura ideal: ${t} °C. Buena para el rendimiento.`
+      }
+    ];
+  
+    for (const { tipo, condicion, desfavorable, favorable, onFail } of condiciones) {
+      if (condicion) {
+        if (tipo !== 'informativo') {
+          tipo === 'crítico' ? criticalFails++ : moderateFails++;
+        }
+        if (typeof onFail === 'function') onFail();
+        if (desfavorable) desfavorables.push(desfavorable);
+      } else if (favorable) {
+        favorables.push(favorable);
+      }
+    }
+  
+    // Añadir sensación térmica cómoda si no hubo advertencia
+    if (!flagSensacionCritica) {
+      favorables.push(`🌡️ Sensación térmica cómoda: ${f} °C. No hay riesgo térmico actual.`);
+    }
+  
+    // Nubosidad (añadida siempre como favorable neutra)
+    if (c <= 10) {
+      favorables.push(`🌞 Cielo despejado (${c}% de nubosidad). Alta exposición solar.`);
+    } else if (c >= 90) {
+      favorables.push(`☁️ Cielo totalmente cubierto (${c}% de nubosidad). Ayuda a evitar calor solar.`);
+    } else {
+      favorables.push(`🌤️ Nubosidad parcial (${c}% de nubosidad). Equilibrio entre sombra y luz.`);
+    }
+  
+    // Resultado final con división clara
+    if (criticalFails > 0) {
+      return {
+        level: 'peligroso',
+        title: '❌ No es seguro correr ahora',
+        message: 'Hay condiciones que pueden poner en riesgo tu salud.',
+        detallesDesfavorables: desfavorables,
+        detallesFavorables: favorables
+      };
+    }
+  
+    if (moderateFails >= 2) {
+      return {
+        level: 'precaución',
+        title: '⚠️ Puedes correr, pero con precauciones',
+        message: 'Algunos factores podrían incomodar o afectar tu rendimiento.',
+        detallesDesfavorables: desfavorables,
+        detallesFavorables: favorables
+      };
+    }
+  
+    return {
+      level: 'ideal',
+      title: '✅ Perfecto para correr',
+      message: 'Todo indica que puedes salir a correr sin problema.',
+      detallesDesfavorables: [],
+      detallesFavorables: favorables
+    };
+  }
+  

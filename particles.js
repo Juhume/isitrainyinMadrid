@@ -52,11 +52,11 @@
         if (p.x - p.r < 0 || p.x + p.r > canvas.width) p.dx *= -1;
         if (p.y - p.r < 0 || p.y + p.r > canvas.height) p.dy *= -1;
 
-        // Opcional: Hacer que las partículas que salen reaparezcan en el lado opuesto (movimiento continuo)
-        // if (p.x + p.r < 0) p.x = canvas.width + p.r;
-        // if (p.x - p.r > canvas.width) p.x = -p.r;
-        // if (p.y + p.r < 0) p.y = canvas.height + p.r;
-        // if (p.y - p.r > canvas.height) p.y = -p.r;
+        // Hacer que las partículas que salen reaparezcan en el lado opuesto (movimiento continuo)
+        if (p.x + p.r < 0) p.x = canvas.width + p.r;
+        if (p.x - p.r > canvas.width) p.x = -p.r;
+        if (p.y + p.r < 0) p.y = canvas.height + p.r;
+        if (p.y - p.r > canvas.height) p.y = -p.r;
       });
 
       appState.activeAnimationIds.particles = requestAnimationFrame(drawParticles);

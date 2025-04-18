@@ -43,99 +43,133 @@
 }
 
 /* ----------------------------------- */
-/* BODY Y FONDOS DINÁMICOS */
+/* BASE BODY Y FONDOS DINÁMICOS */
 /* ----------------------------------- */
 body {
   font-family: 'Rubik', sans-serif;
   background: var(--bg-gradient-default);
-  height: 100dvh;
-  overflow: hidden;
+  background-attachment: fixed;       /* ¡Clave para que no cambie bajo scroll! */
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;                  /* Deja crecer el body con su contenido */
+  overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: center;
-  padding: 15px 12px 100px;
+  padding: 15px 12px 140px;           /* Espacio extra abajo para que no choque */
   padding-top: 80px;
   color: var(--text-color-primary);
-  box-sizing: border-box;
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
 }
 
-@supports (padding: max(0px)) {
-  body {
-    font-family: 'Rubik', sans-serif;
-    background: var(--bg-gradient-default);
-    height: 100dvh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 15px 12px 100px;
-    padding-top: 80px;
-    color: var(--text-color-primary);
-    box-sizing: border-box;
-  }
+body > * {
+  scroll-snap-align: start;
 }
 
-/* Aplicación de fondos SIN !important */
-body.fondo-sun { background: var(--bg-gradient-sun); background-size: 400% 400%; animation: sunnyFlow 20s ease infinite; }
-body.fondo-rain { background: var(--bg-gradient-rain); }
-body.fondo-storm { background: var(--bg-gradient-storm); }
+/* Aplicación de fondos */
+body.fondo-sun {
+  background: var(--bg-gradient-sun);
+  background-size: 400% 400%;
+  animation: sunnyFlow 20s ease infinite;
+}
+
+body.fondo-rain {
+  background: var(--bg-gradient-rain);
+  background-size: 400% 400%;
+}
+
+body.fondo-storm {
+  background: var(--bg-gradient-storm);
+  background-size: 400% 400%;
+}
+
 body.fondo-snow {
-  background: linear-gradient(135deg, #e0f2fe, #bfdbfe);
+  background: var(--bg-gradient-snow);
   color: #1e293b; /* Azul más oscuro para mejor contraste */
+  background-size: 400% 400%;
 }
+
+body.fondo-fog {
+  background: var(--bg-gradient-fog);
+  background-size: 400% 400%;
+}
+
+body.fondo-clouds {
+  background: var(--bg-gradient-clouds);
+  background-size: 400% 400%;
+}
+
+body.fondo-clear-night {
+  background: var(--bg-gradient-clear-night);
+  background-size: 400% 400%;
+}
+
+/* ----------------------------------- */
+/* EFECTOS ESPECÍFICOS POR CLIMA */
+/* Aplicados a elementos internos cuando el body tiene una clase de clima */
+/* ----------------------------------- */
+
+/* Snow specific styles */
 body.fondo-snow #app {
   background: rgba(255, 255, 255, 0.75); /* Más opaco */
   border: 1px solid rgba(59, 130, 246, 0.3); /* Borde azul sutil */
   box-shadow: 0 10px 25px rgba(37, 99, 235, 0.15); /* Sombra azulada */
 }
+
 body.fondo-snow #respuesta .texto {
   color: #1e293b; /* Texto más oscuro */
   font-weight: 400; /* Algo más grueso */
 }
+
 body.fondo-snow #respuesta .temp {
   color: #0369a1; /* Azul oscuro para la temperatura */
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
+
 body.fondo-snow .hora-prevision {
   background: rgba(219, 234, 254, 0.8); /* Más opaco */
   box-shadow: 0 4px 8px rgba(37, 99, 235, 0.15);
   border: 1px solid rgba(59, 130, 246, 0.25);
 }
+
 body.fondo-snow .hora-valor {
   color: #1e40af; /* Azul más oscuro */
   font-weight: 500;
 }
+
 body.fondo-snow .prob-baja .porcentaje {
   background: rgba(37, 99, 235, 0.25); /* Más visible */
   color: #1e40af;
   font-weight: 600;
 }
+
 body.fondo-snow .prob-media .porcentaje {
   background: #3b82f6;
   color: white;
 }
+
 body.fondo-snow .prob-alta .porcentaje {
   background: #1d4ed8;
   color: white;
 }
+
 body.fondo-snow #detalles,
 body.fondo-snow #sol-info {
   color: #334155; /* Color más oscuro */
   font-weight: 400; /* Algo más grueso */
 }
+
 body.fondo-snow .weather-icon-hour {
   filter: drop-shadow(0 2px 3px rgba(37, 99, 235, 0.2));
 }
+
 body.fondo-snow .alerta-paraguas {
   background: rgba(30, 58, 138, 0.15);
   color: #1e40af;
   border: 1px solid rgba(30, 58, 138, 0.2);
 }
-body.fondo-fog { background: var(--bg-gradient-fog); }
-body.fondo-clouds { background: var(--bg-gradient-clouds); }
-body.fondo-clear-night { background: var(--bg-gradient-clear-night); }
 
 /* ----------------------------------- */
 /* CANVAS PARA EFECTOS */
@@ -158,6 +192,7 @@ canvas#rain {
 /* ----------------------------------- */
 /* COMPONENTES PRINCIPALES */
 /* ----------------------------------- */
+
 /* Estilo base del título manteniendo la misma posición para todas las resoluciones */
 #logo {
   position: absolute;
@@ -198,7 +233,7 @@ canvas#rain {
 }
 
 #logo.climate-snow {
-  color: #334155;
+  color: #334155; /* Este color se aplica directamente si no hay text-fill-color */
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
   background: linear-gradient(to right, #1e293b, #334155);
   -webkit-background-clip: text;
@@ -213,6 +248,7 @@ canvas#rain {
   -webkit-text-fill-color: transparent;
 }
 
+
 /* Línea decorativa bajo el título */
 #logo::after {
   content: '';
@@ -224,58 +260,6 @@ canvas#rain {
   height: 2px;
   background: var(--text-color-muted);
   border-radius: 2px;
-}
-
-/* Media queries específicas para tamaños problemáticos */
-@media (max-width: 480px) {
-  #logo {
-    font-size: 1.3rem !important; /* Aumentado de 1.1rem a 1.3rem y forzado con !important */
-    letter-spacing: 2px;
-    position: absolute; /* Mantener posición absoluta */
-    top: 20px; /* Ajustar a una posición más arriba */
-  }
-  
-  body {
-    padding-top: 95px; /* Aumentado para dar más espacio al título */
-  }
-  
-  #logo {
-    font-family: 'Montserrat', 'Rubik', sans-serif;
-    font-size: 1.3rem !important; /* Aumentado de 1rem a 1.3rem y forzado */
-    font-weight: 500;
-    letter-spacing: 2px;
-    background: linear-gradient(to right, var(--text-color-primary), var(--text-color-muted)); /* Gradiente sutil */
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1); /* Halo sutil */
-    padding-bottom: 3px; /* Espacio para el subrayado */
-    position: absolute; /* Mantener posición absoluta */
-    top: 20px; /* Ajustar a una posición más arriba */
-  }
-  
-  #logo::after {
-    bottom: -5px; /* Reducir separación */
-  }
-  
-  #app {
-    margin-top: 30px; /* Aumentar margen superior para separarla del título */
-  }
-}
-
-@media (max-width: 360px) {
-  #logo {
-    font-size: 1rem;
-    letter-spacing: 2px;
-  }
-  
-  body {
-    padding-top: 90px;
-  }
-  
-  #app {
-    margin-top: 25px;
-  }
 }
 
 #app {
@@ -310,6 +294,7 @@ canvas#rain {
   justify-content: center;
   text-align: center;
 }
+
 #respuesta .emoji {
   cursor: pointer;
   transition: transform 0.2s ease;
@@ -334,6 +319,7 @@ canvas#rain {
   margin-bottom: 0.5rem;
   line-height: 1;
 }
+
 #respuesta .texto {
   font-size: 1.1rem; /* Más pequeño para descripciones */
   color: var(--text-color-secondary);
@@ -344,13 +330,14 @@ canvas#rain {
   box-sizing: border-box;
   text-align: center;
 }
+
 #respuesta .error { /* Estilo para mensajes de error */
     color: var(--text-color-error);
     font-size: 1rem;
     font-weight: 400;
 }
 
-#detalles, 
+#detalles,
 #sol-info {
   display: flex;
   justify-content: center;
@@ -363,7 +350,7 @@ canvas#rain {
 }
 
 #sol-info {
-  font-size: 0.85rem; 
+  font-size: 0.85rem;
 }
 
 #sol-info .wi {
@@ -382,14 +369,16 @@ canvas#rain {
 }
 
 #info-clima {
-  position: absolute;
-  bottom: 15px;
-  left: 0;
-  right: 0;
+  position: relative;          /* que no quede absolute */
+  margin-top: 1.5rem;          /* separación del bloque anterior */
+  margin-bottom: 0;            /* sin margen extra abajo */
+  padding-bottom: 1rem;        /* un pequeño cushion interno */
+  width: 90%;
+  max-width: 400px;
   text-align: center;
-  font-size: 0.8rem;
   color: var(--text-color-muted);
-  z-index: 10;
+  font-size: 0.8rem;
+  box-sizing: border-box;
 }
 
 #prevision {
@@ -402,7 +391,8 @@ canvas#rain {
   width: 100%;
   max-width: 400px; /* Limita ancho máximo */
   position: relative;
-  padding-bottom: 40px;
+  padding-bottom: 0;           /* elimina padding si lo tenía */
+  margin-bottom: 0;
 }
 
 #prevision h3 {
@@ -427,11 +417,10 @@ canvas#rain {
     font-weight: 500;
     text-align: center;
     backdrop-filter: blur(6px);
-    display: none;
+    display: none; /* Controlado por JS */
     animation: fadeInApp 0.6s ease-out forwards;
     box-sizing: border-box;
   }
-  
 
 /* Mejora del contenedor principal de previsión de horas */
 #horas-lluvia {
@@ -440,7 +429,7 @@ canvas#rain {
   justify-content: center;
   gap: 8px; /* Gap ajustado */
   width: 100%;
-  max-width: 450px;
+  max-width: 450px; /* Ajustado para dar un poco más de espacio */
   margin: 12px auto 40px; /* Margen ajustado */
   padding: 5px 0 30px;
   box-sizing: border-box;
@@ -463,100 +452,15 @@ canvas#rain {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.03); /* Borde sutil */
+  flex: 0 0 calc(33.333% - 10px); /* Default to 3 per row on smaller screens */
+  max-width: calc(33.333% - 10px);
+  min-height: 100px;
 }
 
 /* Efecto hover unificado */
 .hora-prevision:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* Pantallas grandes: 5 elementos por fila */
-@media (min-width: 601px) {
-  .hora-prevision {
-    flex: 0 0 calc(20% - 10px);
-    max-width: calc(20% - 10px);
-    height: auto;          /* Cambiar de altura fija a auto */
-    min-height: 120px;     /* Aumentar altura mínima */
-    padding: 12px 6px;     /* Ajustar padding */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  
-  /* Ajustar tamaño de icono para pantallas grandes */
-  .weather-icon-hour {
-    width: 48px;
-    height: 48px;
-    margin: 6px auto;
-  }
-  
-  /* Ajustar margen superior del porcentaje */
-  .porcentaje {
-    margin-top: 8px;
-    padding: 3px 8px;
-  }
-}
-
-/* Pantallas pequeñas: distribución 3+2 */
-@media (max-width: 600px) {
-  .hora-prevision {
-    padding: 10px 4px 8px;
-    min-height: 100px;
-  }
-  
-  .hora-prevision:nth-child(-n+3) {
-    flex: 0 0 calc(33.333% - 10px);
-    max-width: calc(33.333% - 10px);
-  }
-  
-  .hora-prevision:nth-child(n+4) {
-    flex: 0 0 calc(50% - 10px);
-    max-width: calc(50% - 10px);
-    margin-top: 8px; /* Menos espacio entre filas */
-  }
-  
-  /* Mejorar la visualización de porcentajes en pantallas pequeñas */
-  .porcentaje {
-    font-size: 0.85rem;
-    padding: 2px 6px;
-    margin-top: 6px;
-  }
-  
-  /* Mejorar la visualización de horas en pantallas pequeñas */
-  .hora-valor {
-    font-size: 0.95rem;
-    margin-bottom: 1px;
-  }
-  
-  #horas-lluvia {
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  
-  .hora-icono {
-    height: 35px; /* Reducido de 40px a 35px */
-    margin: 2px 0; /* Reducido de 4px a 2px */
-    font-size: 1.6rem !important;
-  }
-  
-  .weather-icon-hour {
-    width: 42px; /* Ajustado */
-    height: 42px;
-    margin: 5px auto;
-    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15));
-  }
-  
-  /* Ajustar tamaño del texto de porcentaje en pantallas pequeñas */
-  .porcentaje {
-    font-size: 0.85rem;
-    padding: 2px 6px;
-  }
-}
-
-/* Mejoras de alineación de texto para todas las resoluciones */
-#respuesta, #detalles, #sol-info, #prevision, #info-clima, #horas-lluvia {
-  text-align: center;
 }
 
 /* Mejorar la visibilidad de la hora */
@@ -577,6 +481,16 @@ canvas#rain {
   font-weight: 400; /* Más legible */
   margin-top: 1px;
 }
+
+/* Icono de previsión por hora */
+.weather-icon-hour {
+    width: 42px; /* Ajustado */
+    height: 42px;
+    display: block;
+    margin: 5px auto;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15));
+}
+
 
 /* Porcentaje más legible y distintivo */
 .porcentaje {
@@ -621,266 +535,9 @@ canvas#rain {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive para diferentes tamaños de pantalla */
-@media (max-width: 768px) {
-  #barrio-menu, #mock-menu {
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%) translateY(15px);
-    width: calc(100% - 40px);
-    max-width: 350px;
-  }
-  
-  #barrio-menu.visible, #mock-menu.visible {
-    transform: translateX(-50%) translateY(0);
-  }
-  
-  #app {
-    max-width: 450px;
-    width: calc(100% - 16px);
-    margin: 8px auto;
-    padding: 1.6rem 1.2rem;
-  }
-
-  #app, #prevision {
-    width: calc(100% - 16px);
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  #detalles, #sol-info {
-    display: flex;
-    flex-direction: row; /* Asegura que estén en línea */
-    justify-content: center; /* Centra los elementos horizontalmente */
-    flex-wrap: wrap; /* Permite que se ajusten en pantallas pequeñas */
-    text-align: center;
-    gap: 15px 20px; /* Espaciado entre elementos */
-    width: 100%; /* Asegura que ocupe todo el ancho disponible */
-  }
-  
-  #detalles > div, #sol-info > div {
-    text-align: center;
-    min-width: 80px; /* Ancho mínimo para evitar que se compriman demasiado */
-  }
-  
-  #prevision h3 {
-    text-align: center;
-    width: 100%;
-  }
-}
-
-/* Ajuste específico para dispositivos muy pequeños */
-@media (max-width: 359px) {
-  .hora-prevision {
-    padding: 10px 3px;
-    min-height: 90px;
-  }
-  
-  .porcentaje {
-    font-size: 0.75rem;
-    padding: 1px 3px;
-    margin-top: 4px;
-  }
-  
-  .hora-valor {
-    font-size: 0.8rem;
-    margin-bottom: 2px;
-  }
-  
-  .dia-prevision {
-    font-size: 0.65rem;
-  }
-}
-
-/* Para pantallas muy pequeñas, ajustes adicionales */
-@media (max-width: 480px) {  
-  body {
-    font-family: 'Rubik', sans-serif;
-    background: var(--bg-gradient-default);
-    height: 100dvh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 15px 12px 100px;
-    padding-top: 95px; /* Aumentado para dar más espacio al título */
-    color: var(--text-color-primary);
-    box-sizing: border-box;
-  }
-  
-  #logo {
-    font-family: 'Montserrat', 'Rubik', sans-serif; /* Fuente más distintiva */
-    font-size: 1.3rem !important; /* Ligeramente más grande */
-    font-weight: 500; /* Más peso */
-    letter-spacing: 2px;
-    background: linear-gradient(to right, var(--text-color-primary), var(--text-color-muted)); /* Gradiente sutil */
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1); /* Halo sutil */
-    padding-bottom: 3px; /* Espacio para el subrayado */
-    position: absolute; /* Mantener posición absoluta */
-    top: 20px; /* Ajustar a una posición más arriba */
-  }
-  
-  /* Línea decorativa bajo el título */
-  #logo::after {
-    content: '';
-    position: absolute;
-    bottom: -5px; /* Reducir separación */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 2px;
-    background: var(--text-color-muted);
-    border-radius: 2px;
-  }
-  
-  #app, #prevision {
-    width: calc(100% - 12px); /* 6px de margen a cada lado */
-    margin: 6px auto;
-  }
-  
-  #app {
-    padding: 1.2rem 0.9rem;
-    border-radius: 1rem;
-    margin-top: 30px; /* Aumentar margen superior para separarla del título */
-  }
-  
-  #respuesta {
-    min-height: 90px;
-    margin-bottom: 1rem;
-  }
-  
-  #respuesta .emoji {
-    font-size: 2.8rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  #respuesta .temp {
-    font-size: 2.3rem;
-  }
-  
-  #respuesta .texto {
-    font-size: 0.95rem;
-    padding: 0 5px;
-    width: 100%; /* Asegura que el texto ocupe todo el ancho */
-    box-sizing: border-box;
-    text-align: center;
-  }
-  
-  #detalles, #sol-info {
-    gap: 10px 20px; /* Espaciado reducido */
-    margin-top: 0.3rem;
-    font-size: 0.8rem;
-  }
-  
-  #detalles > div, #sol-info > div {
-    min-width: auto; /* Permitir que se adapten al contenido */
-    padding: 0 5px; /* Pequeño padding horizontal */
-  }
-  
-  #prevision {
-    margin-top: 8px;
-    margin-bottom: 15px;
-  }
-  
-  #prevision h3 {
-    font-size: 0.8rem;
-    margin-bottom: 0.6rem;
-  }
-  
-  #horas-lluvia {
-    gap: 6px;
-    padding: 6px 4px;
-    width: calc(100% - 8px); /* 4px de margen a cada lado */
-    margin: 0 auto;
-  }
-  
-  #barrio-menu, #mock-menu {
-    padding: 12px 15px;
-    border-radius: 10px;
-  }
-  
-  #barrio-options {
-    gap: 8px;
-  }
-  
-  #barrio-options button {
-    font-size: 1.5rem;
-    padding: 6px 10px;
-    border-radius: 8px;
-  }
-  
-  #barrio-menu {
-    bottom: 70px;
-  }
-  
-  #mock-menu {
-    bottom: 15px;
-  }
-  
-  .alerta-paraguas {
-    width: calc(100% - 12px);
-    margin: 0.8rem auto;
-    padding: 0.7rem 0.8rem;
-  }
-}
-
-/* Pantallas muy pequeñas */
-@media (max-width: 360px) {
-  body {
-    font-family: 'Rubik', sans-serif;
-    background: var(--bg-gradient-default);
-    height: 100dvh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 15px 12px 100px;
-    padding-top: 90px;
-    color: var(--text-color-primary);
-    box-sizing: border-box;
-  }
-  
-  #logo {
-    font-size: 0.75rem;
-  }
-  
-  #app, #prevision {
-    width: calc(100% - 8px); /* 4px de margen a cada lado */
-  }
-  
-  #app {
-    padding: 1rem 0.8rem;
-    margin-top: 25px;
-  }
-  
-  #respuesta {
-    min-height: 80px;
-  }
-  
-  #detalles, #sol-info {
-    font-size: 0.75rem;
-    gap: 8px;
-  }
-  
-  #barrio-options button {
-    font-size: 1.3rem;
-    padding: 5px 8px;
-  }
-  
-  #horas-lluvia {
-    width: calc(100% - 6px);
-    gap: 5px;
-  }
-  
-  .alerta-paraguas {
-    width: calc(100% - 10px);
-    padding: 0.6rem 0.7rem;
-  }
+/* Mejoras de alineación de texto para todas las resoluciones */
+#respuesta, #detalles, #sol-info, #prevision, #info-clima, #horas-lluvia {
+  text-align: center;
 }
 
 /* Estilos para los menús flotantes (barrio y mock) */
@@ -962,15 +619,369 @@ canvas#rain {
   margin-right: 5px;
 }
 
-.weather-icon-hour {
-  width: 42px;
-  height: 42px;
-  display: block;
-  margin: 5px auto;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15));
-}
-
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.weather-card.running-advice {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1rem;
+  width: 90%;
+  backdrop-filter: blur(10px);
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(255,255,255,0.1);
+  margin: 1rem auto; /* Centrar y añadir espacio */
+  padding: 1rem 1.5rem;
+  max-width: 400px;
+  box-sizing: border-box;
+}
+
+.running-details {
+  padding-top: 1.5rem;
+  text-align: left;
+}
+
+/* ----------------------------------- */
+/* MEDIA QUERIES */
+/* Organizados de mobile-first a desktop-last */
+/* ----------------------------------- */
+
+/* Support for modern viewports (dvh) - Keep if specifically needed for that support */
+@supports (height: 100dvh) {
+  body {
+    min-height: 100dvh; /* Prefer dvh if supported */
+    height: 100dvh;
+    justify-content: flex-start;
+    padding-bottom: 100px; /* Adjusted from original 140px to match @supports block */
+  }
+}
+
+/* Small screens adjustments (max-width: 600px) */
+@media (max-width: 600px) {
+  .hora-prevision {
+    padding: 10px 4px 8px;
+    min-height: 100px;
+    /* Styles for 3+2 layout */
+    flex: 0 0 calc(33.333% - 10px);
+    max-width: calc(33.333% - 10px);
+  }
+
+  .hora-prevision:nth-child(n+4) {
+    flex: 0 0 calc(50% - 10px);
+    max-width: calc(50% - 10px);
+    margin-top: 8px; /* Menos espacio entre filas */
+  }
+
+  .porcentaje {
+    font-size: 0.85rem;
+    padding: 2px 6px;
+    margin-top: 6px;
+  }
+
+  .hora-valor {
+    font-size: 0.95rem;
+    margin-bottom: 1px;
+  }
+
+  .dia-prevision {
+    font-size: 0.7rem; /* Ensure consistency */
+  }
+
+  .weather-icon-hour {
+      height: 35px; /* Reducido de 40px a 35px */
+      margin: 2px auto; /* Adjusted margin */
+      font-size: 1.6rem !important; /* Kept !important as in original */
+      width: auto; /* Allow height to control size */
+  }
+
+  #horas-lluvia {
+    gap: 8px; /* Keep gap consistent */
+    flex-wrap: wrap; /* Ensure wrapping */
+  }
+}
+
+/* Medium screens adjustments (max-width: 768px) */
+@media (max-width: 768px) {
+  #barrio-menu, #mock-menu {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%) translateY(15px);
+    width: calc(100% - 40px);
+    max-width: 350px;
+  }
+
+  #barrio-menu.visible, #mock-menu.visible {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  #app {
+    max-width: 450px;
+    width: calc(100% - 16px);
+    margin: 8px auto;
+    padding: 1.6rem 1.2rem;
+  }
+
+  #app, #prevision {
+    width: calc(100% - 16px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #detalles, #sol-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+    text-align: center;
+    gap: 15px 20px;
+    width: 100%;
+  }
+
+  #detalles > div, #sol-info > div {
+    text-align: center;
+    min-width: 80px;
+  }
+
+  #prevision h3 {
+    text-align: center;
+    width: 100%;
+  }
+}
+
+/* Smallest screens adjustments (max-width: 359px) */
+@media (max-width: 359px) {
+  .hora-prevision {
+    padding: 10px 3px;
+    min-height: 90px;
+    flex: 0 0 calc(33.333% - 10px); /* Keep 3 per row */
+    max-width: calc(33.333% - 10px);
+  }
+
+  .hora-prevision:nth-child(n+4) {
+    flex: 0 0 calc(50% - 10px); /* Keep 2 per row for the rest */
+    max-width: calc(50% - 10px);
+    margin-top: 8px;
+  }
+
+  .porcentaje {
+    font-size: 0.75rem;
+    padding: 1px 3px;
+    margin-top: 4px;
+  }
+
+  .hora-valor {
+    font-size: 0.8rem;
+    margin-bottom: 2px;
+  }
+
+  .dia-prevision {
+    font-size: 0.65rem;
+  }
+
+  #barrio-options button {
+    font-size: 1.3rem;
+    padding: 5px 8px;
+  }
+
+  #horas-lluvia {
+    width: calc(100% - 6px);
+    gap: 5px;
+  }
+
+  .alerta-paraguas {
+    width: calc(100% - 10px);
+    padding: 0.6rem 0.7rem;
+  }
+
+  /* Adjustments based on original 360px specific block */
+  body {
+     padding-top: 90px;
+   }
+
+  #logo {
+     font-size: 0.75rem; /* This overrides the 480px rule below */
+     letter-spacing: 2px; /* Keep the letter-spacing */
+  }
+
+  #app {
+     margin-top: 25px;
+     padding: 1rem 0.8rem; /* Adjusted padding */
+     width: calc(100% - 8px); /* Adjusted width */
+  }
+
+  #app, #prevision {
+      width: calc(100% - 8px);
+  }
+
+  #detalles, #sol-info {
+     font-size: 0.75rem; /* Adjusted font size */
+     gap: 8px; /* Adjusted gap */
+  }
+}
+
+/* Specific adjustments for screens <= 480px (consolidated) */
+@media (max-width: 480px) {
+   body {
+     padding-top: 95px; /* Adjusted to give more space */
+   }
+
+   #logo {
+     font-family: 'Montserrat', 'Rubik', sans-serif;
+     font-size: 1.3rem !important; /* Kept !important as in original */
+     font-weight: 500;
+     letter-spacing: 2px; /* Adjusted letter spacing */
+     background: linear-gradient(to right, var(--text-color-primary), var(--text-color-muted));
+     -webkit-background-clip: text;
+     background-clip: text;
+     -webkit-text-fill-color: transparent;
+     text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1); /* Adjusted shadow */
+     padding-bottom: 3px;
+     position: absolute;
+     top: 20px; /* Adjusted top position */
+   }
+
+  #logo::after {
+    bottom: -5px; /* Reducer separación */
+  }
+
+  #app, #prevision {
+    width: calc(100% - 12px); /* 6px de margen a cada lado */
+    margin: 6px auto; /* Adjusted margin */
+  }
+
+  #app {
+    padding: 1.2rem 0.9rem; /* Adjusted padding */
+    border-radius: 1rem; /* Adjusted border radius */
+    margin-top: 30px; /* Increased top margin */
+  }
+
+  #respuesta {
+    min-height: 90px; /* Kept original min-height */
+    margin-bottom: 1rem; /* Kept original margin */
+  }
+
+  #respuesta .emoji {
+    font-size: 2.8rem; /* Adjusted font size */
+    margin-bottom: 0.5rem; /* Adjusted margin */
+  }
+
+  #respuesta .temp {
+    font-size: 2.3rem; /* Adjusted font size */
+  }
+
+  #respuesta .texto {
+    font-size: 0.95rem; /* Adjusted font size */
+    padding: 0 5px; /* Adjusted padding */
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  #detalles, #sol-info {
+    gap: 10px 20px; /* Reduced gap */
+    margin-top: 0.3rem; /* Reduced margin */
+    font-size: 0.8rem; /* Adjusted font size */
+  }
+
+  #detalles > div, #sol-info > div {
+    min-width: auto; /* Allow width to adapt */
+    padding: 0 5px; /* Small horizontal padding */
+  }
+
+  #prevision {
+    margin-top: 8px; /* Adjusted margin */
+    margin-bottom: 15px; /* Adjusted margin */
+  }
+
+  #prevision h3 {
+    font-size: 0.8rem; /* Adjusted font size */
+    margin-bottom: 0.6rem; /* Adjusted margin */
+  }
+
+  #horas-lluvia {
+    gap: 6px; /* Adjusted gap */
+    padding: 6px 4px; /* Adjusted padding */
+    width: calc(100% - 8px); /* Adjusted width */
+    margin: 0 auto;
+  }
+
+  #barrio-menu, #mock-menu {
+    padding: 12px 15px; /* Adjusted padding */
+    border-radius: 10px; /* Adjusted border radius */
+  }
+
+  #barrio-options {
+    gap: 8px; /* Adjusted gap */
+  }
+
+  #barrio-options button {
+    font-size: 1.5rem; /* Adjusted font size */
+    padding: 6px 10px; /* Adjusted padding */
+    border-radius: 8px; /* Adjusted border radius */
+  }
+
+  #barrio-menu {
+    bottom: 70px; /* Adjusted bottom position */
+  }
+
+  #mock-menu {
+    bottom: 15px; /* Adjusted bottom position */
+  }
+
+  .alerta-paraguas {
+    width: calc(100% - 12px); /* Adjusted width */
+    margin: 0.8rem auto; /* Adjusted margin */
+    padding: 0.7rem 0.8rem; /* Adjusted padding */
+  }
+}
+
+/* Large screens adjustments (min-width: 601px) */
+@media (min-width: 601px) {
+  .hora-prevision {
+    flex: 0 0 calc(20% - 10px); /* 5 elements per row */
+    max-width: calc(20% - 10px);
+    height: auto;
+    min-height: 120px;
+    padding: 12px 6px;
+    justify-content: space-between; /* Ensure even spacing */
+  }
+
+  .weather-icon-hour {
+    width: 48px;
+    height: 48px;
+    margin: 6px auto;
+  }
+
+  .porcentaje {
+    margin-top: 8px;
+    padding: 3px 8px;
+  }
+}
+
+.desfavorables {
+  color: #c0392b;
+  margin-bottom: 1em;
+}
+
+.favorables {
+  color: #2ecc71;
+}
+
+.boton-reintentar {
+  margin-top: 0.5em;
+  padding: 0.5em 1em;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.boton-reintentar:hover {
+  background-color: #2980b9;
 }
